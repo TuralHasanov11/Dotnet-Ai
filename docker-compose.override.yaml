@@ -1,5 +1,5 @@
 services:
-  agentframeworkquickstart:
+  agent-framework-quick-start:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=5200

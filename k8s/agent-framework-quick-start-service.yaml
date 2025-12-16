@@ -1,11 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: agent-framework-quick-start-deployment
+  name: agent-framework-quick-start
   labels:
     app: agent-framework-quick-start
+  namespace: dotnet-ai
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: agent-framework-quick-start
@@ -16,10 +17,12 @@ spec:
     spec:
       containers:
       - name: agent-framework-quick-start
-        image: dotnet-ai/agent-framework-quickstart:latest
+        image: dotnet-ai/agent-framework-quick-start:latest
         ports:
         - containerPort: 5200
-        - containerPort: 5201   
+          protocol: TCP
+        - containerPort: 5201
+          protocol: TCP
         resources:
           requests:
             cpu: "100m"
@@ -27,21 +30,52 @@ spec:
           limits:
             cpu: "500m"
             memory: "512Mi"
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: ASPNETCORE_HTTPS_PORTS
+          value: "5201"
+        - name: ASPNETCORE_HTTP_PORTS
+          value: "5200"
+        - name: ASPNETCORE_URLS
+          value: http://+:5200
+        livenessProbe:
+            httpGet:
+                path: /health
+                port: 5200
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+        readinessProbe:
+            httpGet:
+                path: /health
+                port: 5200
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+        startupProbe:                           
+            httpGet:
+                path: /health
+                port: 5200
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            failureThreshold: 30                  
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: agent-framework-quick-start-service
+  name: agent-framework-quick-start
   labels:
     app: agent-framework-quick-start
+  namespace: dotnet-ai
 spec:
   type: LoadBalancer
   selector:
     app: agent-framework-quick-start
   ports:
-    - protocol: TCP
-      port: 80
+    - name: "5200"
+      port: 5200
       targetPort: 5200
-    - protocol: TCP
-      port: 443
+    - name: "5201"
+      port: 5201
       targetPort: 5201

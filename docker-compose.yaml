@@ -1,11 +1,11 @@
 services:
 
-  agentframeworkquickstart:
-    image: dotnet-ai/agent-framework-quickstart
+  agent-framework-quick-start:
+    image: dotnet-ai/agent-framework-quick-start
     build:
       context: .
       dockerfile: src/AgentFrameworkQuickStart/Dockerfile
-    container_name: agent-framework-quickstart
+    container_name: agent-framework-quick-start
     ports:
     - "5200:5200"
     - "5201:5201"

@@ -4,6 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -13,9 +15,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () =>
-{
-    return Assembly.GetExecutingAssembly().GetName().Name;
-});
+app.MapGet("/", () => Assembly.GetExecutingAssembly().GetName().Name);
+
+app.MapHealthChecks("/health");
 
 await app.RunAsync();
