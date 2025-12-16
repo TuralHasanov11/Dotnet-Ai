@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-framework-quick-start-deployment
+  labels:
+    app: agent-framework-quick-start
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: agent-framework-quick-start
+  template:
+    metadata:
+      labels:
+        app: agent-framework-quick-start
+    spec:
+      containers:
+      - name: agent-framework-quick-start
+        image: dotnet-ai/agent-framework-quickstart:latest
+        ports:
+        - containerPort: 5200
+        - containerPort: 5201   
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-framework-quick-start-service
+  labels:
+    app: agent-framework-quick-start
+spec:
+  type: LoadBalancer
+  selector:
+    app: agent-framework-quick-start
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5200
+    - protocol: TCP
+      port: 443
+      targetPort: 5201
