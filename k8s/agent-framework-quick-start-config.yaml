@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-framework-quick-start-config
+  labels:
+    app: agent-framework-quick-start
+  namespace: dotnet-ai
+data:
+    ASPNETCORE_ENVIRONMENT: "Development"
+    ASPNETCORE_HTTPS_PORTS: "5201"
+    ASPNETCORE_HTTP_PORTS: "5200"
+    ASPNETCORE_URLS: "http://+:5200"

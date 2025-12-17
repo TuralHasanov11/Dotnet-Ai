@@ -30,15 +30,9 @@ spec:
           limits:
             cpu: "500m"
             memory: "512Mi"
-        env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: Development
-        - name: ASPNETCORE_HTTPS_PORTS
-          value: "5201"
-        - name: ASPNETCORE_HTTP_PORTS
-          value: "5200"
-        - name: ASPNETCORE_URLS
-          value: http://+:5200
+        envFrom:
+        - configMapRef:
+            name: agent-framework-quick-start-config
         livenessProbe:
             httpGet:
                 path: /health

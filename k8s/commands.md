@@ -31,10 +31,14 @@ kubectl get deployments -n dotnet-ai
 kubectl get services -n dotnet-ai
 ```
 
+### Deploy Agent Framework Quick Start ConfigMap to Kubernetes
+```sh
+kubectl apply -f k8s/agent-framework-quick-start-config.yaml
+```
+
 ### Deploy Agent Framework Quick Start to Kubernetes
 ```sh
 kubectl apply -f k8s/agent-framework-quick-start-service.yaml
-
 ```
 
 ### Make a curl request to the Agent Framework Quick Start API
