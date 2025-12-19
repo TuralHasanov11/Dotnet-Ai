@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: dotnet-ai
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:8.4-rc1-alpine3.22
+        command: ["redis-server", "/redis-master/redis-config.conf"]
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: config
+          mountPath: /redis-master
+      volumes:
+      - name: config
+        configMap:
+          name: redis-config
+          items:
+          - key: redis-config.conf
+            path: redis-config.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: dotnet-ai
+  labels:
+    app: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+  type: ClusterIP

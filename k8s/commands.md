@@ -16,6 +16,11 @@ kubectl get events
 kubectl apply -f k8s/dotnet-ai-namespace.yaml
 ```
 
+### Start running namespace
+```sh
+kubectl config set-context --current --namespace=dotnet-ai
+```
+
 ### View Namespaces
 ```sh
 kubectl get namespaces
@@ -31,13 +36,33 @@ kubectl get deployments -n dotnet-ai
 kubectl get services -n dotnet-ai
 ```
 
-### Deploy Agent Framework Quick Start ConfigMap to Kubernetes
+### Configure Service Accounts
 ```sh
-kubectl apply -f k8s/agent-framework-quick-start-config.yaml
+kubectl apply -f k8s/agent-framework-quick-start-service-account.yaml
+```
+
+### Configure Role to allow reading ConfigMaps
+```sh
+kubectl apply -f k8s/configmap-reader-role.yaml
+kubectl apply -f k8s/configmap-reader-role-binding.yaml
+```
+
+### Deploy Redis to Kubernetes
+```sh
+kubectl apply -f k8s/redis-configmap.yaml
+kubectl apply -f k8s/redis-service.yaml
+kubectl exec -it pod/redis -- redis-cli
+```
+
+### Deploy Qdrant to Kubernetes
+```sh
+kubectl apply -f k8s/qdrant-pvc.yaml
+kubectl apply -f k8s/qdrant-service.yaml
 ```
 
 ### Deploy Agent Framework Quick Start to Kubernetes
 ```sh
+kubectl apply -f k8s/agent-framework-quick-start-config.yaml
 kubectl apply -f k8s/agent-framework-quick-start-service.yaml
 ```
 
