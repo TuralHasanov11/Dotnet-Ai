@@ -13,7 +13,7 @@ env:
   DOTNET_VERSION: "10.0.x"
   SOLUTION_PATH: "./DotnetAi.sln"
   AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH: "src/AgentFrameworkQuickStart"
-  AGENT_FRAMEWORK_QUICK_START_PUBLISH_DIR: "./src/AgentFrameworkQuickStart/publish"
+  AGENT_FRAMEWORK_QUICK_START_PUBLISH_DIR: "./publish"
   AGENT_FRAMEWORK_QUICK_START_PUBLISH_APP_PATH: "./src/AgentFrameworkQuickStart/publish"
       
 jobs:
@@ -44,11 +44,16 @@ jobs:
       run: dotnet test ${{env.SOLUTION_PATH}} --no-build --no-restore --verbosity normal --collect:"XPlat Code Coverage"
     - name: Publish AGENT_FRAMEWORK_QUICK_START_PROJECT
       run: dotnet publish ${{env.AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH}} -c Release --no-build --no-restore --property:PublishDir=${{env.AGENT_FRAMEWORK_QUICK_START_PUBLISH_DIR}}
+    - name: Inspect publish output
+      run: |
+        echo "Publish output (expected): ${{env.AGENT_FRAMEWORK_QUICK_START_PUBLISH_APP_PATH}}"
+        ls -la "${{env.AGENT_FRAMEWORK_QUICK_START_PUBLISH_APP_PATH}}" || (echo "Publish output directory not found" && exit 1)
     - name: Publish Artifacts AGENT_FRAMEWORK_QUICK_START_PROJECT
       uses: actions/upload-artifact@v4
       with: 
         name: agent_framework_quick_start
         path: ${{env.AGENT_FRAMEWORK_QUICK_START_PUBLISH_APP_PATH}}
+        if-no-files-found: error
 
   deploy:
     name: Deploy
