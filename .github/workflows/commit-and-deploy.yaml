@@ -34,10 +34,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Run dotnet format
-        run: |
+      run: |
           dotnet format --verify-no-changes ${{env.SOLUTION_PATH}} --verbosity diagnostic || echo "dotnet format found issues, but continuing workflow"
     - name: Display .NET version
-        run: dotnet --version
+      run: dotnet --version
     - name: Build
       run: dotnet build ${{env.SOLUTION_PATH}} --configuration Release /p:RunAnalyzers=true --no-restore
       
