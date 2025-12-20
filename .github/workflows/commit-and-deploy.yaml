@@ -42,7 +42,7 @@ jobs:
       run: dotnet build ${{env.SOLUTION_PATH}} --configuration Release /p:RunAnalyzers=true --no-restore
       
   test:
-    name: Build
+    name: Test
     runs-on: ubuntu-latest
     steps:
     - name: Setup .NET
