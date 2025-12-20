@@ -32,7 +32,7 @@ jobs:
       with:
         dotnet-version: ${{env.DOTNET_VERSION}}
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ${{env.SOLUTION_PATH}}
     - name: Run dotnet format
       run: |
           dotnet format --verify-no-changes ${{env.SOLUTION_PATH}} --verbosity diagnostic || echo "dotnet format found issues, but continuing workflow"
