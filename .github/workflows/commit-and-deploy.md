@@ -6,12 +6,8 @@ name: Commit and Deploy
 on:
   push:
     branches: [ "main" ]
-    paths-ignore:
-      - "**/*.md"
   pull_request:
     branches: [ "main" ]
-    paths-ignore:
-      - "**/*.md"
 
 env:
   DOTNET_VERSION: "10.0.x"
