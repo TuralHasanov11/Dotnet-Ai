@@ -66,6 +66,8 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{env.DOTNET_VERSION}}
+    - name: Restore dependencies
+      run: dotnet restore ${{env.SOLUTION_PATH}}
     - name: Publish AGENT_FRAMEWORK_QUICK_START_PROJECT
       run: dotnet publish ${{env.AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH}} -c Release --no-build --no-restore --property:PublishDir=${{env.AGENT_FRAMEWORK_QUICK_START_PUBLISH_DIR}}
     - name: Publish Artifacts AGENT_FRAMEWORK_QUICK_START_PROJECT
