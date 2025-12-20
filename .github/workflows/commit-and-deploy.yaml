@@ -13,7 +13,7 @@ env:
   DOTNET_VERSION: "10.0.x"
   SOLUTION_PATH: "./DotnetAi.sln"
   AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH: "src/AgentFrameworkQuickStart"
-  AGENT_FRAMEWORK_QUICK_START_PUBLISH_DIR: "src/AgentFrameworkQuickStart/publish"
+  AGENT_FRAMEWORK_QUICK_START_PUBLISH_DIR: "./src/AgentFrameworkQuickStart/publish"
   AGENT_FRAMEWORK_QUICK_START_PUBLISH_APP_PATH: "./src/AgentFrameworkQuickStart/publish"
       
 jobs:
