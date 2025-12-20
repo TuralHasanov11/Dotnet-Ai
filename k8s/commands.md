@@ -3,6 +3,7 @@
 kind create cluster --config=k8s/cluster-config.yaml
 
 kubectl cluster-info --context kind-dotnet-ai-cluster
+kubectl config use-context kind-dotnet-ai-cluster
 ```
 
 
@@ -35,6 +36,27 @@ kubectl get deployments -n dotnet-ai
 ```sh
 kubectl get services -n dotnet-ai
 ```
+
+### Deploy Kubernetes Dashboard using Helm
+```sh
+# Add kubernetes-dashboard repository
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+# Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+
+# Kubectl will make Dashboard available at https://localhost:8443
+kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+```
+
+### Create Admin User for Kubernetes Dashboard
+```sh
+kubectl apply -f k8s/kubernetes-dashboard.yaml
+
+kubectl get secret admin-user -n kubernetes-dashboard -o jsonpath="{.data.token}" | base64 --decode
+# On Windows PowerShell, use:
+[System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((kubectl get secret admin-user -n kubernetes-dashboard -o jsonpath="{.data.token}")))
+```
+
 
 ### Configure Service Accounts
 ```sh
@@ -72,13 +94,3 @@ kubectl get services/agent-framework-quick-start -o go-template='{{(index .spec.
 curl http://localhost:5200/health
 ``` 
 
-### Deploy Kubernetes Dashboard using Helm
-```sh
-# Add kubernetes-dashboard repository
-helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-# Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart
-helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
-
-# Kubectl will make Dashboard available at https://localhost:8443
-kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
-```
