@@ -7,9 +7,17 @@ metadata:
   namespace: dotnet-ai
 spec:
   replicas: 1
+  revisionHistoryLimit: 10
+  minReadySeconds: 10
+  progressDeadlineSeconds: 600
   selector:
     matchLabels:
       app: agent-framework-quick-start
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
