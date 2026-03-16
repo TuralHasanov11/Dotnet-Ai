@@ -20,7 +20,6 @@ Your goal is to help me write effective unit tests with XUnit, covering both sta
 - No test class attributes required (unlike MSTest/NUnit)
 - Use fact-based tests with `[Fact]` attribute for simple tests
 - Follow the Arrange-Act-Assert (AAA) pattern
-- Name tests using the pattern `MethodName_Scenario_ExpectedBehavior`
 - Use constructor for setup and `IDisposable.Dispose()` for teardown
 - Use `IClassFixture<T>` for shared context between tests in a class
 - Use `ICollectionFixture<T>` for shared context between multiple test classes
@@ -33,6 +32,7 @@ Your goal is to help me write effective unit tests with XUnit, covering both sta
 - Include only the assertions needed to verify the test case
 - Make tests independent and idempotent (can run in any order)
 - Avoid test interdependencies
+- According to the book namely *[How Google Tests Software: Help me test like Google](https://books.google.de/books/about/How_Google_Tests_Software.html?id=vHlTOVTKHeUC&redir_esc=y)* written by an engineering director at Google, Google has strict rules in terms of the resource usage based on the test size. Google has defined 3 test types: Small, Medium, Large. Small tests cover small amounts of code, are usually performed as automated tests, and they correspond to unit tests in conventional testing terms. Therefore, most resources are either mocked (or stubbed), or they are not used at all in small tests. Medium tests involve two or more interacting components similar to what we know as integration tests. Tests are either executed with automation or manually (if the event is difficult or significantly expensive to automate). Resources like databases, file streams, threads are allowed to be used (fakes or mocks are generally discouraged, prefer real resources), however the systems that are in direct interaction with users are discouraged to be used medium tests. Testcontainers 💡 is a great library to create a "real" testing resources separate from the production resources so that you do not pollute production resources. Large tests cover three or more features, representing real user scenarios and use real user data sources, might take well over hours to run. These tests are measures that the software satisfies user needs, so they correspond to usability tests, or functional acceptance tests an so on. All kinds of resources are used here to make sure that the software operates as it is supposed to.
 
 ## Data-Driven Tests
 
@@ -55,7 +55,7 @@ Your goal is to help me write effective unit tests with XUnit, covering both sta
 
 ## Mocking and Isolation
 
-- Consider using Moq or NSubstitute alongside XUnit
+- Consider using NSubstitute alongside XUnit
 - Mock dependencies to isolate units under test
 - Use interfaces to facilitate mocking
 - Consider using a DI container for complex test setups
@@ -67,3 +67,9 @@ Your goal is to help me write effective unit tests with XUnit, covering both sta
 - Use collection fixtures to group tests with shared dependencies
 - Consider output helpers (`ITestOutputHelper`) for test diagnostics
 - Skip tests conditionally with `Skip = "reason"` in fact/theory attributes
+
+## References
+Make use of provided web pages to generate the corresponding tests
+- Fetch *[Integration tests](https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-9.0&pivots=xunit)* web page to follow the best practices to generate integration tests.
+- Fetch *[MVC unit tests](https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-9.0)* web page to follow the best practices to generate unit test MVC controllers.
+- Fetch *[Razor Pages unit tests](https://learn.microsoft.com/en-us/aspnet/core/test/razor-pages-tests?view=aspnetcore-9.0)* web page to follow the best practices to generate unit test Razor Pages.
