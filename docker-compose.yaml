@@ -9,6 +9,8 @@ services:
     ports:
     - "5200:5200"
     - "5201:5201"
+    networks:
+    - dotnet-ai-network
 
   web-app:
     image: dotnet-ai/webapp
@@ -19,3 +21,10 @@ services:
     ports:
     - "5000:5000"
     - "5001:5001"
+    networks:
+    - dotnet-ai-network
+
+networks:
+  dotnet-ai-network:
+    name: dotnet-ai-network
+    driver: bridge

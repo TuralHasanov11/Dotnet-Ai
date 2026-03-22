@@ -38,10 +38,10 @@ dotnet_sort_system_directives_first = false
 file_header_template = unset
 
 # this. and Me. preferences
-dotnet_style_qualification_for_event = true:suggestion
-dotnet_style_qualification_for_field = true:suggestion
-dotnet_style_qualification_for_method = true:suggestion
-dotnet_style_qualification_for_property = true:suggestion
+dotnet_style_qualification_for_event = true:none
+dotnet_style_qualification_for_field = true:none
+dotnet_style_qualification_for_method = true:none
+dotnet_style_qualification_for_property = true:none
 
 # Language keywords vs BCL types preferences
 dotnet_style_predefined_type_for_locals_parameters_members = true:warning
@@ -1366,8 +1366,8 @@ dotnet_diagnostic.CA2265.severity = warning
 #### Language Rules ####
 
 # this and Me preferences
-dotnet_diagnostic.IDE0003.severity = suggestion
-dotnet_diagnostic.IDE0009.severity = suggestion
+dotnet_diagnostic.IDE0003.severity = false:silent
+dotnet_diagnostic.IDE0009.severity = none
 
 # Use 'System.HashCode.Combine' ****
 dotnet_diagnostic.IDE0070.severity = warning
@@ -1881,3 +1881,4 @@ dotnet_diagnostic.IDE0076.severity = suggestion
 
 #Avoid legacy format target in global 'SuppressMessageAttribute'
 dotnet_diagnostic.IDE0077.severity = warning
+
