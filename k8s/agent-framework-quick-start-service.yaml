@@ -22,6 +22,7 @@ spec:
     metadata:
       labels:
         app: agent-framework-quick-start
+        service: agent-framework-quick-start
     spec:
       serviceAccountName: agent-framework-quick-start
       containers:
@@ -71,15 +72,19 @@ metadata:
   name: agent-framework-quick-start
   labels:
     app: agent-framework-quick-start
+    service: agent-framework-quick-start
   namespace: dotnet-ai
 spec:
   type: LoadBalancer
   selector:
     app: agent-framework-quick-start
+    service: agent-framework-quick-start
   ports:
     - name: "5200"
       port: 5200
       targetPort: 5200
+      protocol: TCP
     - name: "5201"
       port: 5201
       targetPort: 5201
+      protocol: TCP
