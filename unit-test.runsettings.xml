@@ -27,7 +27,7 @@
                         <Functions>
                             <Exclude>
                                 <Function>^AgentFrameworkQuickStart\.Program$</Function>
-                                <Function>^Broker\.API\.Program$</Function>
+                                <Function>^WebApp1\.Program$</Function>
                             </Exclude>
                         </Functions>
 
