@@ -13,6 +13,8 @@ builder.Services.AddHttpClient("agent-framework-quick-start", (serviceProvider, 
     }
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,6 +34,8 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+app.MapHealthChecks("/health");
 
 app.MapGet("/ping-agent", async (IHttpClientFactory httpClientFactory, CancellationToken cancellationToken) =>
 {

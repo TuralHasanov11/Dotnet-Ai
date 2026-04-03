@@ -1,3 +1,8 @@
+### Get Kind clusters
+```sh
+kind get clusters
+```
+
 ### Create a Kind Cluster
 ```sh
 kind create cluster --config=k8s/cluster-config.yaml
@@ -5,7 +10,6 @@ kind create cluster --config=k8s/cluster-config.yaml
 kubectl cluster-info --context kind-dotnet-ai-cluster
 kubectl config use-context kind-dotnet-ai-cluster
 ```
-
 
 ### View cluster events
 ```sh
@@ -84,8 +88,25 @@ kubectl apply -f k8s/qdrant-service.yaml
 
 ### Deploy Agent Framework Quick Start to Kubernetes
 ```sh
+docker build -t agent-framework-quick-start:latest -f src/AgentFrameworkQuickStart/Dockerfile .
 kubectl apply -f k8s/agent-framework-quick-start-config.yaml
 kubectl apply -f k8s/agent-framework-quick-start-service.yaml
+kubectl -n dotnet-ai port-forward svc/agent-framework-quick-start 5200:5200
+```
+
+### Deploy WebApp1 to Kubernetes
+```sh
+docker build -t web-app1:latest -f src/WebApp1/Dockerfile .
+kubectl apply -f k8s/web-app1-config.yaml
+kubectl apply -f k8s/web-app1-service.yaml
+kubectl -n dotnet-ai port-forward svc/web-app1 5000:5000
+```
+
+### Check deployments, services, pods
+```sh
+kubectl get deployments -n dotnet-ai
+kubectl get services -n dotnet-ai
+kubectl get pods -n dotnet-ai
 ```
 
 ### Make a curl request to the Agent Framework Quick Start API

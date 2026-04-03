@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentFrameworkQuickStart", 
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "src\SharedKernel\SharedKernel.csproj", "{B8F1D257-6942-4D33-BBFA-0EACA399EA97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,11 +33,24 @@ Global
 		{71140C41-9A8D-41E1-BA63-DD4AB1560FB5}.Release|x64.Build.0 = Release|Any CPU
 		{71140C41-9A8D-41E1-BA63-DD4AB1560FB5}.Release|x86.ActiveCfg = Release|Any CPU
 		{71140C41-9A8D-41E1-BA63-DD4AB1560FB5}.Release|x86.Build.0 = Release|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Debug|x64.Build.0 = Debug|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Debug|x86.Build.0 = Debug|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Release|x64.ActiveCfg = Release|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Release|x64.Build.0 = Release|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Release|x86.ActiveCfg = Release|Any CPU
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{71140C41-9A8D-41E1-BA63-DD4AB1560FB5} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{B8F1D257-6942-4D33-BBFA-0EACA399EA97} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

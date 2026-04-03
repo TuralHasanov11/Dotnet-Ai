@@ -32,8 +32,6 @@ spec:
         ports:
         - containerPort: 5200
           protocol: TCP
-        - containerPort: 5201
-          protocol: TCP
         resources:
           requests:
             cpu: "100m"
@@ -83,8 +81,4 @@ spec:
     - name: "5200"
       port: 5200
       targetPort: 5200
-      protocol: TCP
-    - name: "5201"
-      port: 5201
-      targetPort: 5201
       protocol: TCP
