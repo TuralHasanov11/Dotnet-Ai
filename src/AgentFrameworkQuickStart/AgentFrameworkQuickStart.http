@@ -1,6 +1,28 @@
 @AgentFrameworkQuickStart_HostAddress = http://localhost:5030
 
-GET {{AgentFrameworkQuickStart_HostAddress}}/weatherforecast/
+GET {{AgentFrameworkQuickStart_HostAddress}}/api/agents/capabilities
 Accept: application/json
+
+###
+
+POST {{AgentFrameworkQuickStart_HostAddress}}/api/agents/knowledge/documents
+Content-Type: application/json
+
+{
+	"title": "Knowledge base onboarding",
+	"content": "Uploaded knowledge should include clear product policies, definitions, and operating guidance.",
+	"source": "internal-docs",
+	"tags": ["onboarding", "policy"]
+}
+
+###
+
+POST {{AgentFrameworkQuickStart_HostAddress}}/api/agents/answer
+Content-Type: application/json
+
+{
+	"question": "What should uploaded knowledge include?",
+	"maxResults": 3
+}
 
 ###

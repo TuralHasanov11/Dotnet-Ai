@@ -1,3 +1,8 @@
+### Init Spec
+```sh
+specify init --here
+```
+
 ### Start docker composer with override file
 
 ```sh
