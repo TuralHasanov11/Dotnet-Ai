@@ -23,3 +23,8 @@ dotnet test ./DotnetAi.sln
 ./run-unit-tests-and-coverage.sh
 ./run-integration-tests-and-coverage.sh
 ```
+
+### OpenSSF socorecard
+```sh
+docker run -e GITHUB_AUTH_TOKEN=<your access token> gcr.io/openssf/scorecard:stable --repo=https://github.com/TuralHasanov11/Dotnet-Ai
+```
