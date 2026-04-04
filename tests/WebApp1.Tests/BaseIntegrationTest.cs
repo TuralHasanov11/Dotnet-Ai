@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace WebApp1.Tests;
 
-[Trait("Type", "Integration")]
+[Trait("Category", "Integration")]
 public class BaseIntegrationTest : IAsyncLifetime
 {
     protected HttpClient Client { get; }

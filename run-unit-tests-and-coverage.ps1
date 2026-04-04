@@ -1,13 +1,11 @@
 # Run unit tests with coverage
-dotnet test --settings unit-test.runsettings.xml
+dotnet test --solution "./DotnetAi.sln" --filter-trait "Category=Unit" --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml --results-directory "tests\TestResults\Unit"
 
-# Find the latest Cobertura file for unit tests
-$unitCoverageFile = Get-ChildItem -Path "TestResults\Unit" -Recurse -Filter *.cobertura.xml | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+# # Find the latest Cobertura file for unit tests
+$unitCoverageFile = Get-ChildItem -Path "tests\TestResults\Unit" -Recurse -Filter *.cobertura.xml | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
 if ($unitCoverageFile) {
-    dotnet "$env:UserProfile\.nuget\packages\reportgenerator\5.5.0\tools\net9.0\ReportGenerator.dll" `
-        -reports:"$($unitCoverageFile.FullName)" `
-        -targetdir:unittestcoveragereport
+    ReportGenerator -reports:"$($unitCoverageFile.FullName)" -targetdir:"tests\CoverageResults\Unit"
 } else {
     Write-Host "No unit test coverage file found."
 }

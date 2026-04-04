@@ -378,3 +378,6 @@ FodyWeavers.xsd
 .env.development.local
 .env.test.local
 .env.production.local
+
+**/tests/TestResults*
+**/tests/CoverageResults*

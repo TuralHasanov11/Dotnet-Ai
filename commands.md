@@ -17,4 +17,9 @@ $certDir = Join-Path $env:APPDATA 'ASP.NET\Https'; New-Item -ItemType Directory 
 ### Test
 ```sh
 dotnet test ./DotnetAi.sln
+
+./run-unit-tests-and-coverage.ps1
+./run-integration-tests-and-coverage.ps1
+./run-unit-tests-and-coverage.sh
+./run-integration-tests-and-coverage.sh
 ```

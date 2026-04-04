@@ -3,6 +3,7 @@ using SharedKernel.Cqrs;
 
 namespace SharedKernel.Tests;
 
+[Trait("Category", "Unit")]
 public sealed class CqrsTests
 {
     [Fact]

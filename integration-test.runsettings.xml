@@ -4,10 +4,10 @@
     <!-- Configurations that affect the Test Framework -->
     <RunConfiguration>
         <!-- Path relative to directory that contains .runsettings file-->
-        <ResultsDirectory>.\TestResults\Unit</ResultsDirectory>
+        <ResultsDirectory>.\TestResults\Integration</ResultsDirectory>
 
         <!-- TestCaseFilter expression -->
-        <TestCaseFilter>(Category = Unit)</TestCaseFilter>
+        <TestCaseFilter>(Category = Integration)</TestCaseFilter>
     </RunConfiguration>
 
     <DataCollectionRunSettings>
