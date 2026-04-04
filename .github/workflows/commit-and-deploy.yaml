@@ -48,7 +48,7 @@ jobs:
     - name: Build
       run: dotnet build ${{env.SOLUTION_PATH}} --configuration Release /p:RunAnalyzers=true --no-restore
     - name: Run Unit Tests and Coverage
-      run: dotnet test ${{env.SOLUTION_PATH}} --filter-trait "Category=Unit" --no-build --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test --solution ${{env.SOLUTION_PATH}} --filter-trait "Category=Unit" --no-build --no-restore --verbosity normal
     - name: Publish AGENT_FRAMEWORK_QUICK_START_PROJECT
       run: dotnet publish ${{env.AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH}} -c Release --no-build --no-restore --property:PublishDir=${{env.AGENT_FRAMEWORK_QUICK_START_PUBLISH_DIR}}
     - name: Inspect publish output
@@ -125,7 +125,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{env.SOLUTION_PATH}}
     - name: Run Integration Tests and Coverage
-      run: dotnet test ${{env.SOLUTION_PATH}} --filter-trait "Category=Integration" --no-build --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test --solution ${{env.SOLUTION_PATH}} --filter-trait "Category=Integration" --no-build --no-restore --verbosity normal
 
   deploy:
     name: Deploy
