@@ -15,14 +15,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=5200
       - ASPNETCORE_HTTPS_PORTS=5201
-      - ASPNETCORE_URLS=http://+:5200;https://+:5201
+      - ASPNETCORE_URLS=http://+:5200
 
-  web-app:
-    image: dotnet-ai/webapp
+  web-app1:
+    image: dotnet-ai/webapp1
     build:
       context: .
-      dockerfile: src/WebApp/Dockerfile
-    container_name: webapp
+      dockerfile: src/WebApp1/Dockerfile
+    container_name: webapp1
     ports:
     - "5000:5000"
     - "5001:5001"
@@ -32,7 +32,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=5000
       - ASPNETCORE_HTTPS_PORTS=5001
-      - ASPNETCORE_URLS=http://+:5000;https://+:5001
+      - ASPNETCORE_URLS=http://+:5000
       - AgentFrameworkQuickStart__BaseUrl=http://agent-framework-quick-start:5200
 
 networks:

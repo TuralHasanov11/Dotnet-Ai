@@ -2,5 +2,6 @@
     <PropertyGroup>
         <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+        <HotReloadAutoRestart></HotReloadAutoRestart>
 	</PropertyGroup>
 </Project>

@@ -28,7 +28,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: web-app1
-        image: dotnet-ai/webapp:latest
+        image: dotnet-ai/webapp1:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000

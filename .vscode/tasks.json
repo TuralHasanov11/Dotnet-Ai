@@ -1,0 +1,195 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/DotnetAi.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/DotnetAi.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/DotnetAi.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: debug",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "dotnetai:dev",
+                "target": "base",
+                "dockerfile": "${workspaceFolder}/src/WebApp1/Dockerfile",
+                "context": "${workspaceFolder}",
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/WebApp1/WebApp1.csproj"
+            }
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: release",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "dotnetai:latest",
+                "dockerfile": "${workspaceFolder}/src/WebApp1/Dockerfile",
+                "context": "${workspaceFolder}",
+                "platform": {
+                    "os": "windows",
+                    "architecture": "amd64"
+                },
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/WebApp1/WebApp1.csproj"
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: debug",
+            "dependsOn": [
+                "docker-build: debug"
+            ],
+            "dockerRun": {
+                "os": "Windows"
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/WebApp1/WebApp1.csproj",
+                "enableDebugging": true
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: release",
+            "dependsOn": [
+                "docker-build: release"
+            ],
+            "dockerRun": {
+                "os": "Windows"
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/WebApp1/WebApp1.csproj"
+            }
+        },
+        {
+            "label": "compose: up",
+            "type": "process",
+            "command": "docker-compose",
+            "args": [
+                "-f",
+                "docker-compose.yaml",
+                "-f",
+                "docker-compose.override.yaml",
+                "up",
+                "-d",
+                "--build"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "compose: down",
+            "type": "process",
+            "command": "docker-compose",
+            "args": [
+                "-f",
+                "docker-compose.yaml",
+                "-f",
+                "docker-compose.override.yaml",
+                "down"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "compose: logs",
+            "type": "process",
+            "command": "docker-compose",
+            "args": [
+                "-f",
+                "docker-compose.yaml",
+                "-f",
+                "docker-compose.override.yaml",
+                "logs",
+                "-f"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "k8s: deploy",
+            "type": "process",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "kubectl apply -f k8s/dotnet-ai-namespace.yaml; kubectl apply -f k8s/agent-framework-quick-start-service-account.yaml; kubectl apply -f k8s/web-app1-service-account.yaml; kubectl apply -f k8s/configmap-reader-role.yaml; kubectl apply -f k8s/configmap-reader-role-binding.yaml; kubectl apply -f k8s/agent-framework-quick-start-config.yaml; kubectl apply -f k8s/web-app1-config.yaml; kubectl apply -f k8s/agent-framework-quick-start-service.yaml; kubectl apply -f k8s/web-app1-service.yaml"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "k8s: delete",
+            "type": "process",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "kubectl delete -f k8s/web-app1-service.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-service.yaml --ignore-not-found=true; kubectl delete -f k8s/web-app1-config.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-config.yaml --ignore-not-found=true; kubectl delete -f k8s/configmap-reader-role-binding.yaml --ignore-not-found=true; kubectl delete -f k8s/configmap-reader-role.yaml --ignore-not-found=true; kubectl delete -f k8s/web-app1-service-account.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-service-account.yaml --ignore-not-found=true"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "k8s: port-forward web-app1",
+            "type": "process",
+            "command": "kubectl",
+            "args": [
+                "-n",
+                "dotnet-ai",
+                "port-forward",
+                "svc/web-app1",
+                "5000:5000"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "k8s: port-forward agent-framework-quick-start",
+            "type": "process",
+            "command": "kubectl",
+            "args": [
+                "-n",
+                "dotnet-ai",
+                "port-forward",
+                "svc/agent-framework-quick-start",
+                "5200:5200"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

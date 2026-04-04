@@ -1,0 +1,61 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/AgentFrameworkQuickStart/bin/Debug/net10.0/AgentFrameworkQuickStart.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/AgentFrameworkQuickStart",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        },
+        {
+            "name": "Containers: .NET Launch",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/WebApp1/WebApp1.csproj"
+            }
+        },
+        {
+            "name": "Docker Compose: Start Stack",
+            "type": "node-terminal",
+            "request": "launch",
+            "preLaunchTask": "compose: up",
+            "command": "start http://localhost:5000"
+        },
+        {
+            "name": "Kubernetes: Deploy and Port-Forward WebApp1",
+            "type": "node-terminal",
+            "request": "launch",
+            "preLaunchTask": "k8s: deploy",
+            "command": "kubectl -n dotnet-ai port-forward svc/web-app1 5000:5000"
+        },
+        {
+            "name": "Kubernetes: Port-Forward Agent API",
+            "type": "node-terminal",
+            "request": "launch",
+            "preLaunchTask": "k8s: deploy",
+            "command": "kubectl -n dotnet-ai port-forward svc/agent-framework-quick-start 5200:5200"
+        }
+    ]
+}
