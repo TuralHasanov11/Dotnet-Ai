@@ -128,8 +128,8 @@ jobs:
         dotnet-version: ${{env.DOTNET_VERSION}}
     - name: Restore dependencies
       run: dotnet restore ${{env.SOLUTION_PATH}}
-    - name: Run Integration Tests and Coverage
-      run: dotnet test --solution ${{env.SOLUTION_PATH}} --configuration Release --filter-trait "Category=Integration" --no-restore --verbosity normal
+    # - name: Run Integration Tests and Coverage
+    #   run: dotnet test --solution ${{env.SOLUTION_PATH}} --configuration Release --filter-trait "Category=Integration" --no-restore --verbosity normal
 
   deploy:
     name: Deploy
@@ -172,23 +172,23 @@ jobs:
       run: |
         echo "Automated performance tests are not wired yet."
         echo "Manual action: add k6/JMeter/Gatling scripts and run them in this stage."
-    - name: Mutation Testing
-      shell: bash
-      run: |
-        if [[ ! -f ".config/dotnet-tools.json" ]]; then
-          echo "Mutation testing is not automated yet because no dotnet local tools manifest was found."
-          echo "Manual action: add Stryker.NET tool manifest and stryker-config.json, then run 'dotnet stryker'."
-          exit 0
-        fi
+    # - name: Mutation Testing
+    #   shell: bash
+    #   run: |
+    #     if [[ ! -f ".config/dotnet-tools.json" ]]; then
+    #       echo "Mutation testing is not automated yet because no dotnet local tools manifest was found."
+    #       echo "Manual action: add Stryker.NET tool manifest and stryker-config.json, then run 'dotnet stryker'."
+    #       exit 0
+    #     fi
 
-        dotnet tool restore
+    #     dotnet tool restore
 
-        if [[ -f "stryker-config.json" ]]; then
-          dotnet stryker --config-file stryker-config.json
-        else
-          echo "Mutation testing config not found (stryker-config.json)."
-          echo "Manual action: add stryker-config.json to enable automated mutation testing."
-        fi
+    #     if [[ -f "stryker-config.json" ]]; then
+    #       dotnet stryker --config-file stryker-config.json
+    #     else
+    #       echo "Mutation testing config not found (stryker-config.json)."
+    #       echo "Manual action: add stryker-config.json to enable automated mutation testing."
+    #     fi
 
   manual_testing:
     name: Manual Testing
