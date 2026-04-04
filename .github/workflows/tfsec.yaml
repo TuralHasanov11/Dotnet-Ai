@@ -1,13 +1,6 @@
 name: tfsec
 
 'on':
-  push:
-    branches:
-      - main
-    paths:
-      - "**/*.tf"
-      - "**/*.tfvars"
-      - "**/*.hcl"
   pull_request:
     branches:
       - main
