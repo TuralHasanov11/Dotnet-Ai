@@ -1,9 +1,8 @@
 {
     "version": "0.2.0",
     "configurations": [
-      
         {
-            "name": ".NET Core Launch (web)",
+            "name": ".NET Core Launch AgentFrameworkQuickStart",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -17,9 +16,23 @@
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": ".NET Core Launch WebApp1",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/WebApp1/bin/Debug/net10.0/WebApp1.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/WebApp1",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
             }
         },
         {

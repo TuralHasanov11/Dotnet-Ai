@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SharedKernel.Cqrs;
@@ -27,7 +23,7 @@ public static class Extensions
         {
             services.AddScoped(handler.Interface, handler.Implementation);
         }
-        
+
         return services;
     }
 
