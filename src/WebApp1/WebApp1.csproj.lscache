@@ -65,9 +65,9 @@ obj/Debug/net10.0/
 Pages/
  Error.cshtml.cs
  Index.cshtml.cs
- MetaProgrammingSamples/SampleCodeGeneration.cshtml.cs
  PageExtensions.cs
  Privacy.cshtml.cs
+ ToBeRedirected.cs
 Program.cs
 
 [metadataReferences]
@@ -422,11 +422,11 @@ obj/Debug/net10.0/WebApp1.GeneratedMSBuildEditorConfig.editorconfig
 Pages/
  Error.cshtml
  Index.cshtml
- MetaProgrammingSamples/SampleCodeGeneration.cshtml
  Privacy.cshtml
  Shared/
   _Layout.cshtml
   _ValidationScriptsPartial.cshtml
+ ToBeRedirected.cshtml
  _ViewImports.cshtml
  _ViewStart.cshtml
 
@@ -434,10 +434,10 @@ Pages/
 Pages/
  Error.cshtml
  Index.cshtml
- MetaProgrammingSamples/SampleCodeGeneration.cshtml
  Privacy.cshtml
  Shared/
   _Layout.cshtml
   _ValidationScriptsPartial.cshtml
+ ToBeRedirected.cshtml
  _ViewImports.cshtml
  _ViewStart.cshtml

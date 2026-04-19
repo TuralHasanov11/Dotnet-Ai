@@ -4,7 +4,7 @@ namespace WebApp1.Pages;
 
 public class PrivacyModel : PageModel
 {
-    public void OnGet()
+    public void OnGet(string text)
     {
     }
 }
