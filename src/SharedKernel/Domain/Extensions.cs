@@ -1,11 +1,13 @@
+using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace SharedKernel.Domain;
 
-public static class Extensions
+public static class DomainExtensions
 {
     extension(BaseEntity entity)
-    {
+    { 
         public string ToStringReflection()
         {
             return entity.GetType()
