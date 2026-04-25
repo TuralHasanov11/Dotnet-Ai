@@ -123,7 +123,7 @@
                 "dotnet-ai",
                 "port-forward",
                 "svc/agent-framework-quick-start",
-                "5200:5200"
+                "5002:5002"
             ],
             "problemMatcher": []
         }

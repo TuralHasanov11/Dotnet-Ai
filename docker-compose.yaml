@@ -7,15 +7,15 @@ services:
       dockerfile: src/AgentFrameworkQuickStart/Dockerfile
     container_name: agent-framework-quick-start
     ports:
-    - "5200:5200"
-    - "5201:5201"
+    - "5002:5002"
+    - "5003:5003"
     networks:
     - dotnet-ai-network
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5200
-      - ASPNETCORE_HTTPS_PORTS=5201
-      - ASPNETCORE_URLS=http://+:5200
+      - ASPNETCORE_HTTP_PORTS=5002
+      - ASPNETCORE_HTTPS_PORTS=5003
+      - ASPNETCORE_URLS=http://+:5002
 
   web-app1:
     image: dotnet-ai/webapp1
@@ -33,9 +33,26 @@ services:
       - ASPNETCORE_HTTP_PORTS=5000
       - ASPNETCORE_HTTPS_PORTS=5001
       - ASPNETCORE_URLS=http://+:5000
-      - AgentFrameworkQuickStart__BaseUrl=http://agent-framework-quick-start:5200
+      - AgentFrameworkQuickStart__BaseUrl=http://agent-framework-quick-start:5002
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6.1
+    container_name: keycloak
+    command: start-dev
+    ports:
+      - "127.0.0.1:8082:8082"
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    networks:
+      - dotnet-ai-network
 
 networks:
   dotnet-ai-network:
     name: dotnet-ai-network
     driver: bridge
+
+volumes:
+  keycloak_data:

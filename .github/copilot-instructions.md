@@ -20,7 +20,7 @@ These instructions make AI agents productive quickly in this repo by documenting
 
 ## Docker & Compose
 - Image build context is repo root; Dockerfile lives in project folder.
-- Compose service: agent-framework-quick-start builds dotnet-ai/agent-framework-quick-start and exposes ports 5200 (HTTP) and 5201 (HTTPS): see ../docker-compose.yaml.
+- Compose service: agent-framework-quick-start builds dotnet-ai/agent-framework-quick-start and exposes ports 5002 (HTTP) and 5003 (HTTPS): see ../docker-compose.yaml.
 - Note: the base Dockerfile uses USER $APP_UID (Visual Studio debug pattern). If building outside VS, ensure APP_UID is set or remove that line.
 
 ## Kubernetes (kind or any K8s)
@@ -33,7 +33,7 @@ These instructions make AI agents productive quickly in this repo by documenting
 ## Project Conventions
 - Target framework: net10.0 (see ../src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj).
 - Central Package Versions: managed in ../Directory.Packages.props (e.g., Microsoft.AspNetCore.OpenApi). Add new packages via this file.
-- Health/readiness/liveness probes use /health on port 5200. Keep probe paths aligned with MapHealthChecks.
+- Health/readiness/liveness probes use /health on port 5002. Keep probe paths aligned with MapHealthChecks.
 - Environment defaults (ports/urls) are provided via ConfigMap in k8s to match container ports.
 
 ## Common Tasks (examples)
@@ -44,4 +44,4 @@ These instructions make AI agents productive quickly in this repo by documenting
 
 ## Notes
 - Redis/Qdrant manifests exist under ../k8s but the app doesn’t currently integrate with them; wire up services/env as needed.
-- HTTPS port 5201 is exposed for future use; current app uses HTTP 5200 with probes.
+- HTTPS port 5003 is exposed for future use; current app uses HTTP 5002 with probes.

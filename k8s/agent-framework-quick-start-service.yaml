@@ -30,7 +30,7 @@ spec:
         image: dotnet-ai/agent-framework-quick-start:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 5200
+        - containerPort: 5002
           protocol: TCP
         resources:
           requests:
@@ -45,21 +45,21 @@ spec:
         livenessProbe:
             httpGet:
                 path: /health
-                port: 5200
+                port: 5002
             initialDelaySeconds: 10
             periodSeconds: 10
             failureThreshold: 3
         readinessProbe:
             httpGet:
                 path: /health
-                port: 5200
+                port: 5002
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 3
         startupProbe:                           
             httpGet:
                 path: /health
-                port: 5200
+                port: 5002
             initialDelaySeconds: 0
             periodSeconds: 5
             failureThreshold: 30                 
@@ -78,7 +78,7 @@ spec:
     app: agent-framework-quick-start
     service: agent-framework-quick-start
   ports:
-    - name: "5200"
-      port: 5200
-      targetPort: 5200
+    - name: "5002"
+      port: 5002
+      targetPort: 5002
       protocol: TCP

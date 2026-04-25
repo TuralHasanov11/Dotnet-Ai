@@ -5,22 +5,23 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using WebApp1.Identity;
+using SharedKernel.Identity;
 
-namespace WebApp1.OpenApi;
+namespace SharedKernel.OpenApi;
 
-internal class SecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
+public class WebSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {
     public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
     {
         var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
 
-        var keycloakOptions = context.ApplicationServices.GetRequiredService<IOptions<KeycloakOptions>>();
 
         if (authenticationSchemes.Any(authScheme => authScheme.Name == OpenIdConnectDefaults.AuthenticationScheme))
         {
+            var keycloakOptions = context.ApplicationServices.GetRequiredService<IOptions<KeycloakOptions>>();
             var authority = new Uri(keycloakOptions.Value.Authority, UriKind.Absolute);
             var authorizationUrl = new Uri(authority, "protocol/openid-connect/auth");
             var tokenUrl = new Uri(authority, "protocol/openid-connect/token");

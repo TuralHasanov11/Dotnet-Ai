@@ -7,6 +7,6 @@ metadata:
   namespace: dotnet-ai
 data:
   ASPNETCORE_ENVIRONMENT: "Development"
-  ASPNETCORE_HTTP_PORTS: "5200"
-  ASPNETCORE_URLS: "http://+:5200"
-  AgentFrameworkQuickStart__BaseUrl: "http://agent-framework-quick-start:5200"
+  ASPNETCORE_HTTP_PORTS: "5002"
+  ASPNETCORE_URLS: "http://+:5002"
+  AgentFrameworkQuickStart__BaseUrl: "http://agent-framework-quick-start:5002"

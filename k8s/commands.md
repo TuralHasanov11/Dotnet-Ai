@@ -91,7 +91,7 @@ kubectl apply -f k8s/qdrant-service.yaml
 docker build -t agent-framework-quick-start:latest -f src/AgentFrameworkQuickStart/Dockerfile .
 kubectl apply -f k8s/agent-framework-quick-start-config.yaml
 kubectl apply -f k8s/agent-framework-quick-start-service.yaml
-kubectl -n dotnet-ai port-forward svc/agent-framework-quick-start 5200:5200
+kubectl -n dotnet-ai port-forward svc/agent-framework-quick-start 5002:5002
 ```
 
 ### Deploy WebApp1 to Kubernetes
@@ -112,6 +112,6 @@ kubectl get pods -n dotnet-ai
 ### Make a curl request to the Agent Framework Quick Start API
 ```sh
 kubectl get services/agent-framework-quick-start -o go-template='{{(index .spec.ports 0).nodePort}}' -n dotnet-ai
-curl http://localhost:5200/health
+curl http://localhost:5002/health
 ``` 
 

@@ -2,12 +2,10 @@ version=1
 
 # This file caches language service data to improve the performance of C# Dev Kit.
 # It is not intended for manual editing. It can safely be deleted and will be
-# regenerated automatically.
+# regenerated automatically. For more information, see https://aka.ms/lscache
 #
-# To exclude from version control, add *.lscache to your .gitignore file.
-#
-# To disable caching, add the following to your VS Code settings:
-#   "dotnet.projectsystem.enableLanguageServiceCache": false
+# To control where cache files are stored, use the following VS Code setting:
+#   "dotnet.projectsystem.cacheInProjectFolder": true
 
 [project]
 language=C#
@@ -57,6 +55,7 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
+GlobalUsings.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  AgentFrameworkQuickStart.AssemblyInfo.cs
@@ -64,6 +63,7 @@ obj/Debug/net10.0/
 Program.cs
 
 [metadataReferences]
+../SharedKernel/obj/Debug/net10.0/ref/SharedKernel.dll
 <DOTNET>/packs/Microsoft.AspNetCore.App.Ref/10.0.7/ref/net10.0/
  Microsoft.AspNetCore.Antiforgery.dll
  Microsoft.AspNetCore.Authentication.Abstractions.dll
@@ -374,8 +374,20 @@ Program.cs
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
 <NUGET>/
+ microsoft.aspnetcore.authentication.jwtbearer/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+ microsoft.aspnetcore.authentication.openidconnect/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
  microsoft.aspnetcore.openapi/9.0.10/lib/net9.0/Microsoft.AspNetCore.OpenApi.dll
+ microsoft.extensions.compliance.abstractions/10.4.0/lib/net10.0/Microsoft.Extensions.Compliance.Abstractions.dll
+ microsoft.extensions.compliance.redaction/10.4.0/lib/net10.0/Microsoft.Extensions.Compliance.Redaction.dll
+ microsoft.identitymodel.abstractions/8.0.1/lib/net9.0/Microsoft.IdentityModel.Abstractions.dll
+ microsoft.identitymodel.jsonwebtokens/8.0.1/lib/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+ microsoft.identitymodel.logging/8.0.1/lib/net9.0/Microsoft.IdentityModel.Logging.dll
+ microsoft.identitymodel.protocols.openidconnect/8.0.1/lib/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+ microsoft.identitymodel.protocols/8.0.1/lib/net9.0/Microsoft.IdentityModel.Protocols.dll
+ microsoft.identitymodel.tokens/8.0.1/lib/net9.0/Microsoft.IdentityModel.Tokens.dll
  microsoft.openapi/1.6.17/lib/netstandard2.0/Microsoft.OpenApi.dll
+ scalar.aspnetcore/2.14.4/lib/net10.0/Scalar.AspNetCore.dll
+ system.identitymodel.tokens.jwt/8.0.1/lib/net9.0/System.IdentityModel.Tokens.Jwt.dll
 
 [analyzerReferences]
 <DOTNET>/packs/Microsoft.AspNetCore.App.Ref/10.0.7/analyzers/dotnet/cs/

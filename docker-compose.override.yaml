@@ -2,12 +2,12 @@ services:
   agent-framework-quick-start:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5200
-      - ASPNETCORE_HTTPS_PORTS=5201
-      - ASPNETCORE_URLS=http://+:5200
+      - ASPNETCORE_HTTP_PORTS=5002
+      - ASPNETCORE_HTTPS_PORTS=5003
+      - ASPNETCORE_URLS=http://+:5002
     ports:
-      - "5200:5200"
-      - "5201:5201"
+      - "5002:5002"
+      - "5003:5003"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

@@ -68,7 +68,7 @@
             "type": "node-terminal",
             "request": "launch",
             "preLaunchTask": "k8s: deploy",
-            "command": "kubectl -n dotnet-ai port-forward svc/agent-framework-quick-start 5200:5200"
+            "command": "kubectl -n dotnet-ai port-forward svc/agent-framework-quick-start 5002:5002"
         }
     ]
 }

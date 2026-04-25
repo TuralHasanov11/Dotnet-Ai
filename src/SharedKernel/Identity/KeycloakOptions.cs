@@ -1,4 +1,4 @@
-namespace WebApp1.Identity;
+namespace SharedKernel.Identity;
 
 public sealed class KeycloakOptions
 {

@@ -2,13 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
-using WebApp1.Identity;
-using WebApp1.OpenApi;
+using SharedKernel.Identity;
+using SharedKernel.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,7 +72,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<InfoTransformer>();
-    options.AddDocumentTransformer<SecuritySchemeTransformer>();
+    options.AddDocumentTransformer<WebSecuritySchemeTransformer>();
 });
 
 var app = builder.Build();
