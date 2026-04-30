@@ -6,8 +6,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
-using SharedKernel.Identity;
-using SharedKernel.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 

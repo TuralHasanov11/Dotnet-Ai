@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SharedKernel.Cqrs;
 
-namespace SharedKernel.Tests;
+namespace SharedKernel.Tests.Domain;
 
 [Trait("Category", "Unit")]
 public sealed class CqrsTests

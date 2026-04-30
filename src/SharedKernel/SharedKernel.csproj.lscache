@@ -70,7 +70,9 @@ Domain/
 Expressions/
  InstanceHelper.cs
  PropertyHelper.cs
-Identity/KeycloakOptions.cs
+Identity/
+ KeycloakOptions.cs
+ UserInfo.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  SharedKernel.AssemblyInfo.cs

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentFrameworkQuickStart.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp1", "src\WebApp1\WebApp1.csproj", "{B1769038-B2BB-4ADC-A575-AAEF6363D64D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp1.Tests", "tests\WebApp1.Tests\WebApp1.Tests.csproj", "{C9B2B5C7-9F3B-4B9B-BDCD-5E7F2C9F8A1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

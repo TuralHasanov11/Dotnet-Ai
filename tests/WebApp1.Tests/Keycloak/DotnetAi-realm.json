@@ -1,0 +1,57 @@
+{
+  "realm": "DotnetAi",
+  "enabled": true,
+  "sslRequired": "none",
+  "displayName": "DotnetAi",
+  "clients": [
+    {
+      "clientId": "dotnet-ai-client-web-app-1",
+      "name": "Web App 1",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "your-client-secret-for-web-app-1",
+      "redirectUris": [
+        "http://localhost:5000/signin-oidc"
+      ],
+      "webOrigins": [
+        "+"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "test-user",
+      "enabled": true,
+      "email": "test-user@localhost",
+      "emailVerified": true,
+      "firstName": "Test",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@localhost",
+      "emailVerified": true,
+      "firstName": "Dotnet",
+      "lastName": "Admin",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}

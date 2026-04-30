@@ -1,16 +1,39 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
-using SharedKernel.Identity;
-using SharedKernel.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<KeycloakOptions>(builder.Configuration.GetSection(KeycloakOptions.SectionName));
 
 builder.Services.AddOpenApi();
 
 builder.Services.AddHealthChecks();
+
+builder.Services.AddAuthentication()
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        var oidcConfig = builder.Configuration.GetSection("Keycloak");
+
+        options.MetadataAddress = oidcConfig["Authority"] + "/.well-known/openid-configuration";
+        options.Authority = oidcConfig["Authority"];
+        options.Audience = oidcConfig["Audience"];
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidAudience = oidcConfig["Audience"],
+            ValidIssuer = oidcConfig["Authority"]
+        };
+
+        options.MapInboundClaims = false;
+    });
 
 builder.Services.AddAuthorization(options =>
 {
@@ -44,8 +67,13 @@ if (app.Environment.IsDevelopment())
 
     app.MapScalarApiReference(
         options => options
-            .AddPreferredSecuritySchemes("Keycloak")
-            .AddAuthorizationCodeFlow("Keycloak", flow =>
+            .AddPreferredSecuritySchemes("Keycloak", "KeycloakSelf")
+            .AddHttpAuthentication("Keycloak", flow =>
+            {
+                flow.Description = "Keycloak Authentication";
+                flow.Token = "";
+            })
+            .AddAuthorizationCodeFlow("KeycloakSelf", flow =>
             {
                 flow.ClientId = keycloakOptions.ClientId;
                 flow.ClientSecret = keycloakOptions.ClientSecret;
