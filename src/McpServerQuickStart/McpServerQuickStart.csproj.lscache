@@ -13,18 +13,18 @@ primary
 lastDtbSucceeded
 
 [properties]
-AssemblyName=WebApp1
+AssemblyName=McpServerQuickStart
 CommandLineArgsForDesignTimeEvaluation=-langversion:14.0 -define:TRACE
 CompilerGeneratedFilesOutputPath=
 MaxSupportedLangVersion=14.0
 ProjectAssetsFile=<PATH>obj/project.assets.json
-RootNamespace=WebApp1
+RootNamespace=McpServerQuickStart
 RunAnalyzers=
 RunAnalyzersDuringLiveAnalysis=
 SolutionPath=<PATH>../../DotnetAi.sln
 TargetFrameworkIdentifier=.NETCoreApp
-TargetPath=<PATH>bin/Debug/net10.0/WebApp1.dll
-TargetRefPath=<PATH>obj/Debug/net10.0/ref/WebApp1.dll
+TargetPath=<PATH>bin/Debug/net10.0/McpServerQuickStart.dll
+TargetRefPath=<PATH>obj/Debug/net10.0/ref/McpServerQuickStart.dll
 TemporaryDependencyNodeTargetIdentifier=net10.0
 
 [commandLineArguments]
@@ -44,8 +44,8 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /debug:portable
 /filealign:512
 /optimize-
-/out:obj\Debug\net10.0\WebApp1.dll
-/refout:obj\Debug\net10.0\refint\WebApp1.dll
+/out:obj\Debug\net10.0\McpServerQuickStart.dll
+/refout:obj\Debug\net10.0\refint\McpServerQuickStart.dll
 /target:exe
 /warnaserror-
 /utf8output
@@ -55,19 +55,12 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
-GlobalUsings.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
- WebApp1.AssemblyInfo.cs
- WebApp1.GlobalUsings.g.cs
- WebApp1.RazorAssemblyInfo.cs
-Pages/
- Error.cshtml.cs
- Index.cshtml.cs
- PageExtensions.cs
- Privacy.cshtml.cs
- ToBeRedirected.cs
+ McpServerQuickStart.AssemblyInfo.cs
+ McpServerQuickStart.GlobalUsings.g.cs
 Program.cs
+Tools/WeatherTools.cs
 
 [metadataReferences]
 ../
@@ -387,6 +380,7 @@ Program.cs
  microsoft.aspnetcore.authentication.openidconnect/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
  microsoft.aspnetcore.diagnostics.middleware/10.5.0/lib/net10.0/Microsoft.AspNetCore.Diagnostics.Middleware.dll
  microsoft.aspnetcore.openapi/9.0.10/lib/net9.0/Microsoft.AspNetCore.OpenApi.dll
+ microsoft.extensions.ai.abstractions/10.4.1/lib/net10.0/Microsoft.Extensions.AI.Abstractions.dll
  microsoft.extensions.ambientmetadata.application/10.5.0/lib/net10.0/Microsoft.Extensions.AmbientMetadata.Application.dll
  microsoft.extensions.compliance.abstractions/10.5.0/lib/net10.0/Microsoft.Extensions.Compliance.Abstractions.dll
  microsoft.extensions.compliance.redaction/10.4.0/lib/net10.0/Microsoft.Extensions.Compliance.Redaction.dll
@@ -404,6 +398,9 @@ Program.cs
  microsoft.identitymodel.protocols/8.0.1/lib/net9.0/Microsoft.IdentityModel.Protocols.dll
  microsoft.identitymodel.tokens/8.0.1/lib/net9.0/Microsoft.IdentityModel.Tokens.dll
  microsoft.openapi/1.6.17/lib/netstandard2.0/Microsoft.OpenApi.dll
+ modelcontextprotocol.aspnetcore/1.2.0/lib/net10.0/ModelContextProtocol.AspNetCore.dll
+ modelcontextprotocol.core/1.2.0/lib/net10.0/ModelContextProtocol.Core.dll
+ modelcontextprotocol/1.2.0/lib/net10.0/ModelContextProtocol.dll
  opentelemetry.api.providerbuilderextensions/1.15.3/lib/net10.0/OpenTelemetry.Api.ProviderBuilderExtensions.dll
  opentelemetry.api/1.15.3/lib/net10.0/OpenTelemetry.Api.dll
  opentelemetry.exporter.opentelemetryprotocol/1.15.3/lib/net10.0/OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
@@ -452,32 +449,9 @@ Program.cs
 <NUGET>/microsoft.extensions.telemetry.abstractions/10.5.0/analyzers/dotnet/cs/
  Microsoft.Gen.Logging.dll
  Microsoft.Gen.Metrics.dll
+<NUGET>/modelcontextprotocol.core/1.2.0/analyzers/dotnet/cs/ModelContextProtocol.Analyzers.dll
 
 [analyzerConfigFiles]
 ../../.editorconfig
 <DOTNET>/sdk/10.0.107/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
-obj/Debug/net10.0/WebApp1.GeneratedMSBuildEditorConfig.editorconfig
-
-[additionalFiles]
-Pages/
- Error.cshtml
- Index.cshtml
- Privacy.cshtml
- Shared/
-  _Layout.cshtml
-  _ValidationScriptsPartial.cshtml
- ToBeRedirected.cshtml
- _ViewImports.cshtml
- _ViewStart.cshtml
-
-[dynamicFiles]
-Pages/
- Error.cshtml
- Index.cshtml
- Privacy.cshtml
- Shared/
-  _Layout.cshtml
-  _ValidationScriptsPartial.cshtml
- ToBeRedirected.cshtml
- _ViewImports.cshtml
- _ViewStart.cshtml
+obj/Debug/net10.0/McpServerQuickStart.GeneratedMSBuildEditorConfig.editorconfig

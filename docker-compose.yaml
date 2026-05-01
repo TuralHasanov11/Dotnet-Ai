@@ -17,6 +17,23 @@ services:
       - ASPNETCORE_HTTPS_PORTS=5003
       - ASPNETCORE_URLS=http://+:5002
 
+  mcp-server-quick-start:
+    image: dotnet-ai/mcp-server-quick-start
+    build:
+      context: .
+      dockerfile: src/McpServerQuickStart/Dockerfile
+    container_name: mcp-server-quick-start
+    ports:
+    - "5004:5004"
+    - "5005:5005"
+    networks:
+    - dotnet-ai-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5004
+      - ASPNETCORE_HTTPS_PORTS=5005
+      - ASPNETCORE_URLS=http://+:5004
+
   web-app1:
     image: dotnet-ai/webapp1
     build:

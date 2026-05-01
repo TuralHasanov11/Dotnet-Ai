@@ -70,17 +70,11 @@ Domain/
 Expressions/
  InstanceHelper.cs
  PropertyHelper.cs
-Identity/
- KeycloakOptions.cs
- UserInfo.cs
+Messaging/HttpClientExtensions.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  SharedKernel.AssemblyInfo.cs
  SharedKernel.GlobalUsings.g.cs
-OpenApi/
- ApiSecuritySchemeTransformer.cs
- InfoTransformer.cs
- WebSecuritySchemeTransformer.cs
 
 [metadataReferences]
 <DOTNET>/packs/Microsoft.AspNetCore.App.Ref/10.0.7/ref/net10.0/

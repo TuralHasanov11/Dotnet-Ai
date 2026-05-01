@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using SharedKernel.Identity;
+using ServiceDefaults.Identity;
 
-namespace SharedKernel.OpenApi;
+namespace ServiceDefaults.OpenApi;
 
 public class ApiSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {
@@ -41,13 +41,7 @@ public class ApiSecuritySchemeTransformer(IAuthenticationSchemeProvider authenti
                         {
                             AuthorizationUrl = authorizationUrl,
                             TokenUrl = tokenUrl,
-                            Scopes = new Dictionary<string, string>
-                            {
-                                ["openid"] = "OpenID Connect scope",
-                                ["profile"] = "User profile information",
-                                ["email"] = "User email information",
-                                ["access_as_user"] = "Access API on behalf of the user"
-                            }
+                            Scopes = keycloakOptions.Value.Scopes.ToDictionary(scope => scope, scope => $"Access to {scope} API")
                         }
                     },
                     Description = "OAuth2 Authorization Code Flow (Keycloak)"

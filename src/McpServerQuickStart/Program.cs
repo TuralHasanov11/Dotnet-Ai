@@ -1,11 +1,10 @@
-using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using ServiceDefaults;
 using ServiceDefaults.Identity;
+using ServiceDefaults.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,14 +25,9 @@ builder.Services.AddAuthentication()
         options.Authority = oidcConfig["Authority"];
         options.Audience = oidcConfig["Audience"];
 
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudience = oidcConfig["Audience"],
-            ValidIssuer = oidcConfig["Authority"]
-        };
+        // add scopes
+        options.TokenValidationParameters.ValidAudience = oidcConfig["Audience"];
+        options.TokenValidationParameters.ValidIssuer = oidcConfig["Authority"];
 
         options.MapInboundClaims = false;
     });
@@ -45,11 +39,39 @@ builder.Services.AddAuthorization(options =>
         .Build();
 
     options.FallbackPolicy = options.DefaultPolicy;
+
+    options.AddPolicy("mcp_tools", policy =>
+        policy.RequireClaim("scope", "mcp:tools"));
 });
 
-builder.Services.AddHealthChecks();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+builder.Services.AddMcpServer()
+    .WithHttpTransport(options =>
+    {
+        options.Stateless = true;
+    })
+    .WithToolsFromAssembly();
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
@@ -59,26 +81,16 @@ if (app.Environment.IsDevelopment())
 
     app.MapScalarApiReference(
         options => options
-            .AddPreferredSecuritySchemes("Keycloak", "KeycloakSelf")
-            .AddHttpAuthentication("Keycloak", flow =>
-            {
-                flow.Description = "Keycloak Authentication";
-                flow.Token = "";
-            })
-            .AddAuthorizationCodeFlow("KeycloakSelf", flow =>
+            .AddPreferredSecuritySchemes("Keycloak")
+            .AddClientCredentialsFlow("Keycloak", flow =>
             {
                 flow.ClientId = keycloakOptions.ClientId;
                 flow.ClientSecret = keycloakOptions.ClientSecret;
-                flow.RedirectUri = keycloakOptions.RedirectUri;
-                flow.Pkce = Pkce.Sha256;
             }))
         .AllowAnonymous();
 }
 
-app.UseHttpsRedirection();
-
-app.MapGet("/", () => Assembly.GetExecutingAssembly().GetName().Name);
-
-app.MapDefaultEndpoints();
+app.MapMcp("/mcp").RequireAuthorization("mcp_tools");
 
 await app.RunAsync();
+

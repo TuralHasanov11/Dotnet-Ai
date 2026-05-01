@@ -1,0 +1,6 @@
+@McpServerQuickStart_HostAddress = http://localhost:5052
+
+GET {{McpServerQuickStart_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

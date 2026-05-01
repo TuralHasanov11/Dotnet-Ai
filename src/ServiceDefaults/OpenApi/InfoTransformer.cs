@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
-namespace SharedKernel.OpenApi;
+namespace ServiceDefaults.OpenApi;
 
 public class InfoTransformer : IOpenApiDocumentTransformer
 {

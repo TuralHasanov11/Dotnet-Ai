@@ -66,6 +66,7 @@ obj/Debug/net10.0/
 [metadataReferences]
 ../../src/
  AgentFrameworkQuickStart/obj/Debug/net10.0/ref/AgentFrameworkQuickStart.dll
+ ServiceDefaults/obj/Debug/net10.0/ref/ServiceDefaults.dll
  SharedKernel/obj/Debug/net10.0/ref/SharedKernel.dll
 <DOTNET>/packs/Microsoft.AspNetCore.App.Ref/10.0.7/ref/net10.0/
  Microsoft.AspNetCore.Antiforgery.dll
@@ -383,14 +384,23 @@ obj/Debug/net10.0/
  microsoft.applicationinsights/2.23.0/lib/netstandard2.0/Microsoft.ApplicationInsights.dll
  microsoft.aspnetcore.authentication.jwtbearer/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
  microsoft.aspnetcore.authentication.openidconnect/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
+ microsoft.aspnetcore.diagnostics.middleware/10.5.0/lib/net10.0/Microsoft.AspNetCore.Diagnostics.Middleware.dll
  microsoft.aspnetcore.mvc.testing/10.0.5/lib/net10.0/Microsoft.AspNetCore.Mvc.Testing.dll
  microsoft.aspnetcore.openapi/9.0.10/lib/net9.0/Microsoft.AspNetCore.OpenApi.dll
  microsoft.aspnetcore.testhost/10.0.5/lib/net10.0/Microsoft.AspNetCore.TestHost.dll
  microsoft.bcl.asyncinterfaces/6.0.0/lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll
  microsoft.diasymreader/2.2.3/lib/net10.0/Microsoft.DiaSymReader.dll
- microsoft.extensions.compliance.abstractions/10.4.0/lib/net10.0/Microsoft.Extensions.Compliance.Abstractions.dll
+ microsoft.extensions.ambientmetadata.application/10.5.0/lib/net10.0/Microsoft.Extensions.AmbientMetadata.Application.dll
+ microsoft.extensions.compliance.abstractions/10.5.0/lib/net10.0/Microsoft.Extensions.Compliance.Abstractions.dll
  microsoft.extensions.compliance.redaction/10.4.0/lib/net10.0/Microsoft.Extensions.Compliance.Redaction.dll
+ microsoft.extensions.dependencyinjection.autoactivation/10.5.0/lib/net10.0/Microsoft.Extensions.DependencyInjection.AutoActivation.dll
  microsoft.extensions.dependencymodel/10.0.5/lib/net10.0/Microsoft.Extensions.DependencyModel.dll
+ microsoft.extensions.diagnostics.exceptionsummarization/10.5.0/lib/net10.0/Microsoft.Extensions.Diagnostics.ExceptionSummarization.dll
+ microsoft.extensions.http.diagnostics/10.5.0/lib/net10.0/Microsoft.Extensions.Http.Diagnostics.dll
+ microsoft.extensions.http.resilience/10.5.0/lib/net10.0/Microsoft.Extensions.Http.Resilience.dll
+ microsoft.extensions.resilience/10.5.0/lib/net10.0/Microsoft.Extensions.Resilience.dll
+ microsoft.extensions.telemetry.abstractions/10.5.0/lib/net10.0/Microsoft.Extensions.Telemetry.Abstractions.dll
+ microsoft.extensions.telemetry/10.5.0/lib/net10.0/Microsoft.Extensions.Telemetry.dll
  microsoft.identitymodel.abstractions/8.0.1/lib/net9.0/Microsoft.IdentityModel.Abstractions.dll
  microsoft.identitymodel.jsonwebtokens/8.0.1/lib/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
  microsoft.identitymodel.logging/8.0.1/lib/net9.0/Microsoft.IdentityModel.Logging.dll
@@ -413,6 +423,18 @@ obj/Debug/net10.0/
  microsoft.testing.extensions.trxreport.abstractions/2.0.2/lib/net9.0/Microsoft.Testing.Extensions.TrxReport.Abstractions.dll
  microsoft.testing.platform.msbuild/2.0.2/lib/net9.0/Microsoft.Testing.Extensions.MSBuild.dll
  microsoft.testing.platform/2.1.0/lib/net9.0/Microsoft.Testing.Platform.dll
+ opentelemetry.api.providerbuilderextensions/1.15.3/lib/net10.0/OpenTelemetry.Api.ProviderBuilderExtensions.dll
+ opentelemetry.api/1.15.3/lib/net10.0/OpenTelemetry.Api.dll
+ opentelemetry.exporter.opentelemetryprotocol/1.15.3/lib/net10.0/OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
+ opentelemetry.extensions.hosting/1.15.3/lib/net10.0/OpenTelemetry.Extensions.Hosting.dll
+ opentelemetry.instrumentation.aspnetcore/1.15.2/lib/net10.0/OpenTelemetry.Instrumentation.AspNetCore.dll
+ opentelemetry.instrumentation.grpcnetclient/1.15.1-beta.1/lib/net10.0/OpenTelemetry.Instrumentation.GrpcNetClient.dll
+ opentelemetry.instrumentation.http/1.15.1/lib/net10.0/OpenTelemetry.Instrumentation.Http.dll
+ opentelemetry.instrumentation.runtime/1.15.1/lib/net10.0/OpenTelemetry.Instrumentation.Runtime.dll
+ opentelemetry/1.15.3/lib/net10.0/OpenTelemetry.dll
+ polly.core/8.4.2/lib/net8.0/Polly.Core.dll
+ polly.extensions/8.4.2/lib/net8.0/Polly.Extensions.dll
+ polly.ratelimiting/8.4.2/lib/net8.0/Polly.RateLimiting.dll
  scalar.aspnetcore/2.14.4/lib/net10.0/Scalar.AspNetCore.dll
  sharpziplib/1.4.2/lib/net6.0/ICSharpCode.SharpZipLib.dll
  ssh.net/2025.1.0/lib/net9.0/Renci.SshNet.dll
@@ -432,7 +454,6 @@ obj/Debug/net10.0/
  Microsoft.AspNetCore.App.CodeFixes.dll
  Microsoft.AspNetCore.App.SourceGenerators.dll
  Microsoft.AspNetCore.Components.Analyzers.dll
- Microsoft.Extensions.Logging.Generators.dll
  Microsoft.Extensions.Options.SourceGeneration.dll
  Microsoft.Extensions.Validation.ValidationsGenerator.dll
 <DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.7/analyzers/dotnet/cs/
@@ -450,6 +471,9 @@ obj/Debug/net10.0/
  Microsoft.CodeAnalysis.CodeStyle.Fixes.dll
  Microsoft.CodeAnalysis.CSharp.CodeStyle.dll
  Microsoft.CodeAnalysis.CSharp.CodeStyle.Fixes.dll
+<NUGET>/microsoft.extensions.telemetry.abstractions/10.5.0/analyzers/dotnet/cs/
+ Microsoft.Gen.Logging.dll
+ Microsoft.Gen.Metrics.dll
 <NUGET>/xunit.analyzers/1.27.0/analyzers/dotnet/cs/
  xunit.analyzers.dll
  xunit.analyzers.fixes.dll

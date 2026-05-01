@@ -4,14 +4,28 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using ServiceDefaults;
+using ServiceDefaults.Identity;
+using ServiceDefaults.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseDefaultServiceProvider(config => config.ValidateOnBuild = true);
+builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
+
+// Add service defaults & Aspire client integrations.
+builder.AddServiceDefaults();
+
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<InfoTransformer>();
+    options.AddDocumentTransformer<WebSecuritySchemeTransformer>();
+});
+
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.Configure<KeycloakOptions>(builder.Configuration.GetSection(KeycloakOptions.SectionName));
+
 builder.Services.AddHttpClient("agent-framework-quick-start", (serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -49,6 +63,8 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters.RoleClaimType = "roles";
 
     options.RequireHttpsMetadata = false;
+
+    options.UsePkce = true;
 });
 
 builder.Services.AddAuthorization(options =>
@@ -60,18 +76,6 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = options.DefaultPolicy;
 });
 
-builder.Services.AddOptions<OpenApiInfo>()
-    .BindConfiguration("OpenApiInfo")
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
-
-builder.Services.AddHealthChecks();
-
-builder.Services.AddOpenApi(options =>
-{
-    options.AddDocumentTransformer<InfoTransformer>();
-    options.AddDocumentTransformer<WebSecuritySchemeTransformer>();
-});
 
 var app = builder.Build();
 
@@ -93,7 +97,7 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 
-app.MapHealthChecks("/health").AllowAnonymous();
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
