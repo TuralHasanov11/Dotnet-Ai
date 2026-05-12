@@ -19,7 +19,7 @@ builder.Services.AddOpenApi(options =>
 });
 
 builder.Services.AddAuthentication()
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, "Keycloak", options =>
     {
         var oidcConfig = builder.Configuration.GetSection("Keycloak");
 

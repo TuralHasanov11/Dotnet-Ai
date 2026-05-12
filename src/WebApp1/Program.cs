@@ -38,60 +38,60 @@ builder.Services.AddHttpClient("agent-framework-quick-start", (serviceProvider, 
 });
 
 builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-})
-.AddCookie()
-.AddOpenIdConnect(options =>
-{
-    var oidcConfig = builder.Configuration.GetSection("Keycloak");
-
-    options.Authority = oidcConfig["Authority"];
-    options.ClientId = oidcConfig["ClientId"];
-    options.ClientSecret = oidcConfig["ClientSecret"];
-    options.CallbackPath = new PathString("/signin-oidc");
-    options.SignedOutCallbackPath = new PathString("/signout-oidc");
-
-    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.ResponseType = OpenIdConnectResponseType.Code;
-
-    options.SaveTokens = true;
-    options.GetClaimsFromUserInfoEndpoint = true;
-
-    options.MapInboundClaims = false;
-    options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
-    options.TokenValidationParameters.RoleClaimType = "roles";
-
-    options.RequireHttpsMetadata = false;
-
-    options.Scope.Add("access_as_user");
-
-    options.Events = new OpenIdConnectEvents
     {
-        // Add event handlers
-        OnTicketReceived = async context => {},
-        OnRedirectToIdentityProvider = async context => {},
-        OnPushAuthorization = async context => {},
-        OnMessageReceived = async context => {},
-        OnAccessDenied = async context => {},
-        OnAuthenticationFailed = async context => {},
-        OnRemoteFailure = async context =>
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, "Keycloak", options =>
+    {
+        var oidcConfig = builder.Configuration.GetSection("Keycloak");
+
+        options.Authority = oidcConfig["Authority"];
+        options.ClientId = oidcConfig["ClientId"];
+        options.ClientSecret = oidcConfig["ClientSecret"];
+        options.CallbackPath = new PathString("/signin-oidc");
+        options.SignedOutCallbackPath = new PathString("/signout-oidc");
+
+        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.ResponseType = OpenIdConnectResponseType.Code;
+
+        options.SaveTokens = true;
+        options.GetClaimsFromUserInfoEndpoint = true;
+
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+        options.TokenValidationParameters.RoleClaimType = "roles";
+
+        options.RequireHttpsMetadata = false;
+
+        options.Scope.Add("access_as_user");
+
+        options.Events = new OpenIdConnectEvents
         {
-            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("OnRemoteFailure from identity provider. Scheme: {Scheme: }", context.Scheme.Name);
-
-            if (context.Failure != null)
+            // Add event handlers
+            OnTicketReceived = async context => {},
+            OnRedirectToIdentityProvider = async context => {},
+            OnPushAuthorization = async context => {},
+            OnMessageReceived = async context => {},
+            OnAccessDenied = async context => {},
+            OnAuthenticationFailed = async context => {},
+            OnRemoteFailure = async context =>
             {
-                context.HandleResponse();
-                context.Response.Redirect($"/Error?remoteError={context.Failure.Message}");
-            }
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("OnRemoteFailure from identity provider. Scheme: {Scheme: }", context.Scheme.Name);
 
-            await Task.CompletedTask;
-        },
-        // ...
-    };
-});
+                if (context.Failure != null)
+                {
+                    context.HandleResponse();
+                    context.Response.Redirect($"/Error?remoteError={context.Failure.Message}");
+                }
+
+                await Task.CompletedTask;
+            },
+            // ...
+        };
+    });
 
 builder.Services.AddAuthorization(options =>
 {
