@@ -34,7 +34,7 @@ services:
       - ASPNETCORE_HTTPS_PORTS=5005
       - ASPNETCORE_URLS=http://+:5004
 
-  web-app1:
+  web-app-1:
     image: dotnet-ai/webapp1
     build:
       context: .
@@ -63,6 +63,22 @@ services:
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
     volumes:
       - keycloak_data:/opt/keycloak/data
+    networks:
+      - dotnet-ai-network
+
+  web-app-2:
+    image: dotnet-ai/webapp2
+    container_name: webapp2
+    build:
+      context: ./src/web-app-2
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+    depends_on:
+      - keycloak
     networks:
       - dotnet-ai-network
 

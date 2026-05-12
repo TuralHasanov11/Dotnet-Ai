@@ -27,3 +27,8 @@ README.md
 **/coverage.opencover.xml
 **/tests/TestResults*
 **/tests/CoverageResults*
+**/.github
+**/.specify
+**/specs
+**/docs
+**/k8s

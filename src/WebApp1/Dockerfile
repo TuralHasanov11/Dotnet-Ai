@@ -5,11 +5,10 @@ EXPOSE 5001
 
 ENV ASPNETCORE_URLS=http://+:5000
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+USER app
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG configuration=Release
 WORKDIR /src
-COPY ["Directory.Packages.props", "."]
-COPY ["Directory.Build.props", "."]
 COPY ["src/WebApp1/WebApp1.csproj", "src/WebApp1/"]
 RUN dotnet restore "src/WebApp1/WebApp1.csproj"
 COPY . .

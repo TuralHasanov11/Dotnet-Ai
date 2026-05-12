@@ -1,0 +1,10 @@
+node_modules
+.git
+.nuxt
+.output
+dist
+coverage
+npm-debug.log
+.env
+.vscode
+.DS_Store
