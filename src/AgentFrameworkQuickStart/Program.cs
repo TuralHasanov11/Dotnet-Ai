@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using ServiceDefaults;
 using ServiceDefaults.Identity;
+using ServiceDefaults.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 

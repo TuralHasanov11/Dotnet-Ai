@@ -28,3 +28,8 @@ dotnet test ./DotnetAi.sln
 ```sh
 docker run -e GITHUB_AUTH_TOKEN=<your access token> gcr.io/openssf/scorecard:stable --repo=https://github.com/TuralHasanov11/Dotnet-Ai
 ```
+
+### Add Project to Solution
+```sh
+dotnet sln <solution-file>.sln add <project-file>.csproj
+```

@@ -1,6 +1,6 @@
 namespace SharedKernel.Cqrs;
 
-public interface IRequest<TResponse> where TResponse : class
-{
 
-}
+public interface IRequest;
+
+public interface IRequest<TResponse> where TResponse : class;

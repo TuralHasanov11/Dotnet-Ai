@@ -51,6 +51,7 @@ builder.Services.AddAuthentication(options =>
     options.ClientId = oidcConfig["ClientId"];
     options.ClientSecret = oidcConfig["ClientSecret"];
     options.CallbackPath = new PathString("/signin-oidc");
+    options.SignedOutCallbackPath = new PathString("/signout-oidc");
 
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.ResponseType = OpenIdConnectResponseType.Code;
@@ -64,7 +65,32 @@ builder.Services.AddAuthentication(options =>
 
     options.RequireHttpsMetadata = false;
 
-    options.UsePkce = true;
+    options.Scope.Add("access_as_user");
+
+    options.Events = new OpenIdConnectEvents
+    {
+        // Add event handlers
+        OnTicketReceived = async context => {},
+        OnRedirectToIdentityProvider = async context => {},
+        OnPushAuthorization = async context => {},
+        OnMessageReceived = async context => {},
+        OnAccessDenied = async context => {},
+        OnAuthenticationFailed = async context => {},
+        OnRemoteFailure = async context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("OnRemoteFailure from identity provider. Scheme: {Scheme: }", context.Scheme.Name);
+
+            if (context.Failure != null)
+            {
+                context.HandleResponse();
+                context.Response.Redirect($"/Error?remoteError={context.Failure.Message}");
+            }
+
+            await Task.CompletedTask;
+        },
+        // ...
+    };
 });
 
 builder.Services.AddAuthorization(options =>

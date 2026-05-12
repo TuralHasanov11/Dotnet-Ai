@@ -9,11 +9,19 @@ namespace WebApp1.Pages;
 public class ErrorModel : PageModel
 {
     public string? RequestId { get; set; }
+    public string? Error { get; set; }
+    public string? ErrorDescription { get; set; }
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-    public void OnGet()
+    public void OnGet(string remoteError)
     {
+        if (remoteError != null)
+        {
+            Error = "Remote authentication error";
+            ErrorDescription = remoteError;
+        }
+
         RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
     }
 }

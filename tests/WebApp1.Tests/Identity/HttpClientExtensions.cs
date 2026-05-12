@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 
-namespace WebApp1.Tests;
+namespace WebApp1.Tests.Identity;
 
 public static class HttpClientExtensions
 {

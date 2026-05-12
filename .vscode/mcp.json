@@ -1,0 +1,28 @@
+{
+	"servers": {
+		"makenotion/notion-mcp-server": {
+			"type": "http",
+			"url": "https://mcp.notion.com/sse",
+			"gallery": "https://api.mcp.github.com",
+			"version": "1.0.0"
+		},
+		"microsoft/playwright-mcp": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"@playwright/mcp@latest"
+			],
+			"gallery": "https://api.mcp.github.com",
+			"version": "0.0.1-seed"
+		},
+		"nuxt-ui": {
+          "type": "http",
+          "url": "https://ui.nuxt.com/mcp"
+        },
+        "microsoft.docs.mcp": {
+          "type": "http",
+          "url": "https://learn.microsoft.com/api/mcp"
+        }
+	},
+	"inputs": []
+}

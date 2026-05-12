@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.Keycloak;
 using WebApp1.Tests;
+using WebApp1.Tests.Identity;
 
 [assembly: AssemblyFixture(typeof(BaseFactory))]
 
@@ -50,7 +54,13 @@ public class BaseFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         builder.ConfigureServices(services =>
         {
-
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = "TestScheme";
+                    options.DefaultChallengeScheme = "TestScheme";
+                })
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                    "TestScheme", options => { });
         });
 
         builder.UseEnvironment("Development");
@@ -58,13 +68,36 @@ public class BaseFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        await _keycloakContainer.StartAsync();
+        try
+        {
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            var logger = loggerFactory.CreateLogger<BaseFactory>();
+
+            logger.LogInformation("Starting Keycloak container...");
+            await _keycloakContainer.StartAsync();
+            logger.LogInformation("Keycloak started at {BaseAddress}", _keycloakContainer.GetBaseAddress());
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to initialize test containers", ex);
+        }
     }
 
     public new async Task DisposeAsync()
     {
-        await _keycloakContainer.StopAsync();
-        await _keycloakContainer.DisposeAsync();
-        await base.DisposeAsync();
+        try
+        {
+            if (_keycloakContainer is not null)
+            {
+                await _keycloakContainer.StopAsync();
+                await _keycloakContainer.DisposeAsync();
+            }
+
+            await base.DisposeAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Error during test container cleanup", ex);
+        }
     }
 }
