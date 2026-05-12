@@ -380,6 +380,8 @@ Tools/WeatherTools.cs
  microsoft.aspnetcore.authentication.openidconnect/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
  microsoft.aspnetcore.diagnostics.middleware/10.5.0/lib/net10.0/Microsoft.AspNetCore.Diagnostics.Middleware.dll
  microsoft.aspnetcore.openapi/9.0.10/lib/net9.0/Microsoft.AspNetCore.OpenApi.dll
+ microsoft.entityframeworkcore.abstractions/10.0.8/lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.dll
+ microsoft.entityframeworkcore/10.0.8/lib/net10.0/Microsoft.EntityFrameworkCore.dll
  microsoft.extensions.ai.abstractions/10.4.1/lib/net10.0/Microsoft.Extensions.AI.Abstractions.dll
  microsoft.extensions.ambientmetadata.application/10.5.0/lib/net10.0/Microsoft.Extensions.AmbientMetadata.Application.dll
  microsoft.extensions.compliance.abstractions/10.5.0/lib/net10.0/Microsoft.Extensions.Compliance.Abstractions.dll
@@ -446,10 +448,12 @@ Tools/WeatherTools.cs
  Microsoft.CodeAnalysis.CodeStyle.Fixes.dll
  Microsoft.CodeAnalysis.CSharp.CodeStyle.dll
  Microsoft.CodeAnalysis.CSharp.CodeStyle.Fixes.dll
-<NUGET>/microsoft.extensions.telemetry.abstractions/10.5.0/analyzers/dotnet/cs/
- Microsoft.Gen.Logging.dll
- Microsoft.Gen.Metrics.dll
-<NUGET>/modelcontextprotocol.core/1.2.0/analyzers/dotnet/cs/ModelContextProtocol.Analyzers.dll
+<NUGET>/
+ microsoft.entityframeworkcore.analyzers/10.0.8/analyzers/dotnet/cs/Microsoft.EntityFrameworkCore.Analyzers.dll
+ microsoft.extensions.telemetry.abstractions/10.5.0/analyzers/dotnet/cs/
+  Microsoft.Gen.Logging.dll
+  Microsoft.Gen.Metrics.dll
+ modelcontextprotocol.core/1.2.0/analyzers/dotnet/cs/ModelContextProtocol.Analyzers.dll
 
 [analyzerConfigFiles]
 ../../.editorconfig

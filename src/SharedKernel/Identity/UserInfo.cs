@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace ServiceDefaults.Identity;
+namespace SharedKernel.Identity;
 
 public sealed class UserInfo
 {

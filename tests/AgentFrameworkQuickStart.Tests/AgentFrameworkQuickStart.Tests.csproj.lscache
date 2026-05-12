@@ -390,6 +390,8 @@ obj/Debug/net10.0/
  microsoft.aspnetcore.testhost/10.0.5/lib/net10.0/Microsoft.AspNetCore.TestHost.dll
  microsoft.bcl.asyncinterfaces/6.0.0/lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll
  microsoft.diasymreader/2.2.3/lib/net10.0/Microsoft.DiaSymReader.dll
+ microsoft.entityframeworkcore.abstractions/10.0.8/lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.dll
+ microsoft.entityframeworkcore/10.0.8/lib/net10.0/Microsoft.EntityFrameworkCore.dll
  microsoft.extensions.ambientmetadata.application/10.5.0/lib/net10.0/Microsoft.Extensions.AmbientMetadata.Application.dll
  microsoft.extensions.compliance.abstractions/10.5.0/lib/net10.0/Microsoft.Extensions.Compliance.Abstractions.dll
  microsoft.extensions.compliance.redaction/10.4.0/lib/net10.0/Microsoft.Extensions.Compliance.Redaction.dll
@@ -471,12 +473,14 @@ obj/Debug/net10.0/
  Microsoft.CodeAnalysis.CodeStyle.Fixes.dll
  Microsoft.CodeAnalysis.CSharp.CodeStyle.dll
  Microsoft.CodeAnalysis.CSharp.CodeStyle.Fixes.dll
-<NUGET>/microsoft.extensions.telemetry.abstractions/10.5.0/analyzers/dotnet/cs/
- Microsoft.Gen.Logging.dll
- Microsoft.Gen.Metrics.dll
-<NUGET>/xunit.analyzers/1.27.0/analyzers/dotnet/cs/
- xunit.analyzers.dll
- xunit.analyzers.fixes.dll
+<NUGET>/
+ microsoft.entityframeworkcore.analyzers/10.0.8/analyzers/dotnet/cs/Microsoft.EntityFrameworkCore.Analyzers.dll
+ microsoft.extensions.telemetry.abstractions/10.5.0/analyzers/dotnet/cs/
+  Microsoft.Gen.Logging.dll
+  Microsoft.Gen.Metrics.dll
+ xunit.analyzers/1.27.0/analyzers/dotnet/cs/
+  xunit.analyzers.dll
+  xunit.analyzers.fixes.dll
 
 [analyzerConfigFiles]
 ../../.editorconfig

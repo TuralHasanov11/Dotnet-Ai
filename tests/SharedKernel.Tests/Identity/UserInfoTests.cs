@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using SharedKernel.Identity;
 
 namespace SharedKernel.Tests.Identity;
 
