@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj" />
+    <Project Path="src/McpServerQuickStart/McpServerQuickStart.csproj" />
+    <Project Path="src/ServiceDefaults/ServiceDefaults.csproj" />
+    <Project Path="src/SharedKernel/SharedKernel.csproj" />
+    <Project Path="src/WebApp1/WebApp1.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AgentFrameworkQuickStart.Tests/AgentFrameworkQuickStart.Tests.csproj" />
+    <Project Path="tests/SharedKernel.Tests/SharedKernel.Tests.csproj" />
+    <Project Path="tests/WebApp1.Tests/WebApp1.Tests.csproj" />
+  </Folder>
+</Solution>
