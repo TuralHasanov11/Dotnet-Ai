@@ -52,6 +52,13 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapDefaultEndpoints();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi().AllowAnonymous();
@@ -76,10 +83,7 @@ if (app.Environment.IsDevelopment())
         .AllowAnonymous();
 }
 
-app.UseHttpsRedirection();
-
 app.MapGet("/", () => Assembly.GetExecutingAssembly().GetName().Name);
 
-app.MapDefaultEndpoints();
 
 await app.RunAsync();

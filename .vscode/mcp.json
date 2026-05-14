@@ -16,13 +16,22 @@
 			"version": "0.0.1-seed"
 		},
 		"nuxt-ui": {
-          "type": "http",
-          "url": "https://ui.nuxt.com/mcp"
-        },
-        "microsoft.docs.mcp": {
-          "type": "http",
-          "url": "https://learn.microsoft.com/api/mcp"
-        }
+			"type": "http",
+			"url": "https://ui.nuxt.com/mcp"
+		},
+		"microsoft.docs.mcp": {
+			"type": "http",
+			"url": "https://learn.microsoft.com/api/mcp"
+		},
+		"workiq": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@microsoft/workiq",
+				"mcp"
+			],
+			"type": "stdio"
+		}
 	},
 	"inputs": []
 }
