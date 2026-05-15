@@ -5,6 +5,7 @@ namespace SharedKernel.Identity;
 
 public sealed class UserInfo
 {
+    [EuiiDataAttribute]
     public string UserId { get; }
     public string Name { get; }
     public string[] Roles { get; }
@@ -25,6 +26,8 @@ public sealed class UserInfo
         Groups = groups;
         Wids = wids;
     }
+
+    public bool IsAnonymous => UserId == Anonymous.UserId;
 
     public static UserInfo FromClaimsPrincipal(ClaimsPrincipal principal) =>
         new(GetRequiredClaim(principal, UserIdClaimType),
@@ -51,4 +54,11 @@ public sealed class UserInfo
             principal.FindFirst(claimType)?.Value ??
             throw new InvalidOperationException(
                 $"Could not find required '{claimType}' claim.");
+
+    public static readonly UserInfo Anonymous = new(
+        "anonymous",
+        "Anonymous",
+        [],
+        [],
+        []);
 }

@@ -8,8 +8,8 @@ namespace WebApp1.Pages;
 public static class PageExtensions
 {
     private static readonly ConcurrentDictionary<string, string> _actionNameCache = new();
-        
-     extension(PageModel page)
+
+    extension(PageModel page)
     {
         public RedirectToPageResult RedirectToPage<TPage>(Expression<Action<TPage>> redirectExpression) where TPage : PageModel
         {

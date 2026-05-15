@@ -383,6 +383,10 @@ PrivacyPageTests.cs
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
 <NUGET>/
+ asp.versioning.abstractions/10.0.0/lib/net10.0/Asp.Versioning.Abstractions.dll
+ asp.versioning.http/10.0.0/lib/net10.0/Asp.Versioning.Http.dll
+ asp.versioning.mvc.apiexplorer/10.0.0/lib/net10.0/Asp.Versioning.Mvc.ApiExplorer.dll
+ asp.versioning.mvc/10.0.0/lib/net10.0/Asp.Versioning.Mvc.dll
  bouncycastle.cryptography/2.6.2/lib/net6.0/BouncyCastle.Cryptography.dll
  docker.dotnet.enhanced.x509/3.131.1/lib/net10.0/Docker.DotNet.X509.dll
  docker.dotnet.enhanced/3.131.1/lib/net10.0/Docker.DotNet.dll

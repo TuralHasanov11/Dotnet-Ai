@@ -177,11 +177,11 @@ public sealed class UserInfoTests
 
         Assert.Equal("user-123", principal.FindFirst(UserInfo.UserIdClaimType)?.Value);
         Assert.Equal("John Doe", principal.FindFirst(UserInfo.NameClaimType)?.Value);
-        Assert.Equal(new string[] { "admin", "user" }, 
+        Assert.Equal(new string[] { "admin", "user" },
             principal.FindAll("roles").Select(c => c.Value).ToList());
-        Assert.Equal(new string[] { "group1", "group2" }, 
+        Assert.Equal(new string[] { "group1", "group2" },
             principal.FindAll("groups").Select(c => c.Value).ToList());
-        Assert.Equal(new string[] { "wid1" }, 
+        Assert.Equal(new string[] { "wid1" },
             principal.FindAll("wids").Select(c => c.Value).ToList());
     }
 

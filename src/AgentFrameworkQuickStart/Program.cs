@@ -1,8 +1,11 @@
 using System.Reflection;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using ServiceDefaults;
 using ServiceDefaults.Identity;
@@ -12,11 +15,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddOpenApi(options =>
+builder.Services.AddApiVersioning(options =>
 {
-    options.AddDocumentTransformer<InfoTransformer>();
-    options.AddDocumentTransformer<ApiSecuritySchemeTransformer>();
+    options.ApiVersionReader = new HeaderApiVersionReader("X-API-Version");
+    options.ReportApiVersions = true;
 });
+
+var openApiInfoOptions = builder.Configuration.GetSection("OpenApiInfo").Get<Dictionary<string, OpenApiInfo>>();
+
+foreach (var version in openApiInfoOptions.Keys)
+{
+    var versionedOpenApiInfo = builder.Configuration.GetSection($"OpenApiInfo:{version}").Get<OpenApiInfo>();
+
+    if (versionedOpenApiInfo is not null)
+    {
+        builder.Services.AddOpenApi(version, options =>
+        {
+            options.AddApiVersionTransformer(versionedOpenApiInfo);
+            options.AddDocumentTransformer<ApiSecuritySchemeTransformer>();
+        });
+    }
+}
 
 builder.Services.AddAuthentication()
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, "Keycloak", options =>
@@ -66,20 +85,33 @@ if (app.Environment.IsDevelopment())
     var keycloakOptions = app.Services.GetRequiredService<IOptions<KeycloakOptions>>().Value;
 
     app.MapScalarApiReference(
-        options => options
-            .AddPreferredSecuritySchemes("Keycloak", "KeycloakSelf")
-            .AddHttpAuthentication("Keycloak", flow =>
+        options =>
+        {
+            var descriptions = app.DescribeApiVersions();
+
+            for (var i = 0; i < descriptions.Count; i++)
             {
-                flow.Description = "Keycloak Authentication";
-                flow.Token = "";
-            })
-            .AddAuthorizationCodeFlow("KeycloakSelf", flow =>
-            {
-                flow.ClientId = keycloakOptions.ClientId;
-                flow.ClientSecret = keycloakOptions.ClientSecret;
-                flow.RedirectUri = keycloakOptions.RedirectUri;
-                flow.Pkce = Pkce.Sha256;
-            }))
+                var description = descriptions[i];
+                var isDefault = i == descriptions.Count - 1;
+
+                // isDefault is used to mark the default API version in Scalar.
+                // This decides which version is selected by default when users visit the Scalar UI.
+                options.AddDocument(description.GroupName, description.GroupName, isDefault: isDefault)
+                    .AddPreferredSecuritySchemes("Keycloak", "KeycloakSelf")
+                    .AddHttpAuthentication("Keycloak", flow =>
+                    {
+                        flow.Description = "Keycloak Authentication";
+                        flow.Token = "";
+                    })
+                    .AddAuthorizationCodeFlow("KeycloakSelf", flow =>
+                    {
+                        flow.ClientId = keycloakOptions.ClientId;
+                        flow.ClientSecret = keycloakOptions.ClientSecret;
+                        flow.RedirectUri = keycloakOptions.RedirectUri;
+                        flow.Pkce = Pkce.Sha256;
+                    });
+            }
+        })
         .AllowAnonymous();
 }
 

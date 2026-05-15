@@ -5,7 +5,7 @@ namespace SharedKernel.Domain;
 public static class DomainExtensions
 {
     extension(BaseEntity entity)
-    { 
+    {
         public string ToStringReflection()
         {
             return entity.GetType()

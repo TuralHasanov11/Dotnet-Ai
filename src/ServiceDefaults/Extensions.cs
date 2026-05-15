@@ -1,31 +1,43 @@
+using System.IO.Compression;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Http.Timeouts;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Compliance.Classification;
 using Microsoft.Extensions.Compliance.Redaction;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using ServiceDefaults.Errors;
 using ServiceDefaults.Identity;
+using ServiceDefaults.Monitoring;
+using ServiceDefaults.Performance;
+using ServiceDefaults.Security;
 using SharedKernel.Compliance;
+using SharedKernel.Identity;
 
 namespace ServiceDefaults;
 
+[ExcludeFromCodeCoverage]
 public static class Extensions
 {
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.ConfigureOpenTelemetry();
 
-        builder.Services.AddRequestTimeouts(
-            configure: static timeouts =>
-                timeouts.AddPolicy("HealthChecks", TimeSpan.FromSeconds(5)));
+        ConfigureResiliency(builder);
 
         builder.Services.AddOutputCache(
             configureOptions: static caching =>
@@ -61,6 +73,14 @@ public static class Extensions
 
         builder.Services.Configure<HostOptions>(builder.Configuration.GetSection("Host"));
 
+        builder.Services.AddHsts(options =>
+        {
+            options.Preload = true;
+            options.IncludeSubDomains = true;
+        });
+
+        builder.Services.AddScoped<ContentTypeOptionsMiddleware>();
+
         builder.Services.AddRedaction(options =>
         {
             // EUP: HMAC redactor
@@ -83,19 +103,73 @@ public static class Extensions
             options.SetRedactor<ErasingRedactor>(new DataClassificationSet(LoggingTaxonomyDefinitions.FeedbackDataClassification));
         });
 
-        builder.Services.AddOptions<KeycloakOptions>()
-            .BindConfiguration(KeycloakOptions.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        ConfigureIdentity(builder);
 
-        builder.Services.AddOptions<OpenApiInfo>()
-            .BindConfiguration("OpenApiInfo")
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        builder.Services.AddOpenApi();
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+            options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+            options.SerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.SnakeCaseLower;
+            options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            options.SerializerOptions.WriteIndented = false;
+            options.SerializerOptions.Encoder = JavaScriptEncoder.Default;
+            options.SerializerOptions.AllowTrailingCommas = true;
+            options.SerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
+        });
 
         return builder;
+    }
+
+    private static void ConfigureResiliency<TBuilder>(TBuilder builder) where TBuilder : IHostApplicationBuilder
+    {
+        builder.Services.AddRequestTimeouts(
+            configure: static timeouts =>
+            {
+                timeouts.DefaultPolicy = new RequestTimeoutPolicy
+                {
+                    Timeout = TimeSpan.FromMilliseconds(2000),
+                    TimeoutStatusCode = 503,
+                };
+
+                timeouts.AddPolicy("HealthChecks", TimeSpan.FromSeconds(5));
+            });
+
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.AddFixedWindowLimiter(
+                policyName: "FixedRateLimitingPolicy",
+                fixedWindowOptions =>
+                {
+                    fixedWindowOptions.PermitLimit = 4;
+                    fixedWindowOptions.Window = TimeSpan.FromSeconds(12);
+                    fixedWindowOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    fixedWindowOptions.QueueLimit = 2;
+                });
+        });
+
+        builder.Services.AddRequestDecompression();
+
+        builder.Services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true;
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+        });
+
+        builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+
+        builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.SmallestSize);
+    }
+
+    private static void ConfigureIdentity<TBuilder>(TBuilder builder) where TBuilder : IHostApplicationBuilder
+    {
+        builder.Services.AddOptions<KeycloakOptions>()
+                .BindConfiguration(KeycloakOptions.SectionName)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+        builder.Services.AddScoped<IIdentityService, IdentityService>();
+        builder.Services.AddSingleton<IAuthorizationHandler, GroupAuthorizationHandler>();
     }
 
     public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
@@ -111,7 +185,12 @@ public static class Extensions
             {
                 metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
+                    .AddRuntimeInstrumentation()
+                    .AddMeter(
+                        "Microsoft.AspNetCore.Hosting",
+                        "System.Net.Http",
+                        "Microsoft.AspNetCore.Server.Kestrel",
+                        builder.Environment.ApplicationName);
             })
             .WithTracing(tracing =>
             {
@@ -129,6 +208,21 @@ public static class Extensions
 
         builder.AddOpenTelemetryExporters();
 
+        builder.Logging.EnableEnrichment();
+        builder.Logging.EnableRedaction();
+
+        builder.Services.AddApplicationLogEnricher(options =>
+        {
+            options.ApplicationName = true;
+            options.BuildVersion = true;
+            options.DeploymentRing = true;
+            options.EnvironmentName = true;
+        });
+
+        builder.Services.AddStaticLogEnricher<MachineNameEnricher>();
+
+        builder.Services.AddScoped<RequestTimeMiddleware>();
+        
         return builder;
     }
 
@@ -160,6 +254,8 @@ public static class Extensions
         // Adding health checks endpoints to applications in non-development environments has security implications.
         if (app.Environment.IsDevelopment())
         {
+            app.UseMiddleware<RequestTimeMiddleware>();
+
             var healthChecks = app.MapGroup("");
 
             healthChecks

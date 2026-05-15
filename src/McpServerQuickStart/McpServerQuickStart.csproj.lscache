@@ -376,6 +376,10 @@ Tools/WeatherTools.cs
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
 <NUGET>/
+ asp.versioning.abstractions/10.0.0/lib/net10.0/Asp.Versioning.Abstractions.dll
+ asp.versioning.http/10.0.0/lib/net10.0/Asp.Versioning.Http.dll
+ asp.versioning.mvc.apiexplorer/10.0.0/lib/net10.0/Asp.Versioning.Mvc.ApiExplorer.dll
+ asp.versioning.mvc/10.0.0/lib/net10.0/Asp.Versioning.Mvc.dll
  microsoft.aspnetcore.authentication.jwtbearer/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
  microsoft.aspnetcore.authentication.openidconnect/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
  microsoft.aspnetcore.diagnostics.middleware/10.5.0/lib/net10.0/Microsoft.AspNetCore.Diagnostics.Middleware.dll

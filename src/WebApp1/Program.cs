@@ -1,9 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using ServiceDefaults;
 using ServiceDefaults.Identity;
@@ -17,11 +19,27 @@ builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 
-builder.Services.AddOpenApi(options =>
+builder.Services.AddApiVersioning(options =>
 {
-    options.AddDocumentTransformer<InfoTransformer>();
-    options.AddDocumentTransformer<WebSecuritySchemeTransformer>();
+    options.ApiVersionReader = new HeaderApiVersionReader("X-API-Version");
+    options.ReportApiVersions = true;
 });
+
+var openApiInfoOptions = builder.Configuration.GetSection("OpenApiInfo").Get<Dictionary<string, OpenApiInfo>>();
+
+foreach (var version in openApiInfoOptions.Keys)
+{
+    var versionedOpenApiInfo = builder.Configuration.GetSection($"OpenApiInfo:{version}").Get<OpenApiInfo>();
+
+    if (versionedOpenApiInfo is not null)
+    {
+        builder.Services.AddOpenApi(version, options =>
+        {
+            options.AddApiVersionTransformer(versionedOpenApiInfo);
+            options.AddDocumentTransformer<WebSecuritySchemeTransformer>();
+        });
+    }
+}
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -70,12 +88,12 @@ builder.Services.AddAuthentication(options =>
         options.Events = new OpenIdConnectEvents
         {
             // Add event handlers
-            OnTicketReceived = async context => {},
-            OnRedirectToIdentityProvider = async context => {},
-            OnPushAuthorization = async context => {},
-            OnMessageReceived = async context => {},
-            OnAccessDenied = async context => {},
-            OnAuthenticationFailed = async context => {},
+            OnTicketReceived = async context => { },
+            OnRedirectToIdentityProvider = async context => { },
+            OnPushAuthorization = async context => { },
+            OnMessageReceived = async context => { },
+            OnAccessDenied = async context => { },
+            OnAuthenticationFailed = async context => { },
             OnRemoteFailure = async context =>
             {
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
@@ -133,15 +151,28 @@ if (app.Environment.IsDevelopment())
     var keycloakOptions = app.Services.GetRequiredService<IOptions<KeycloakOptions>>().Value;
 
     app.MapScalarApiReference(
-        options => options
-            .AddPreferredSecuritySchemes("Keycloak")
-            .AddAuthorizationCodeFlow("Keycloak", flow =>
+        options =>
+        {
+            var descriptions = app.DescribeApiVersions();
+
+            for (var i = 0; i < descriptions.Count; i++)
             {
-                flow.ClientId = keycloakOptions.ClientId;
-                flow.ClientSecret = keycloakOptions.ClientSecret;
-                flow.RedirectUri = keycloakOptions.RedirectUri;
-                flow.Pkce = Pkce.Sha256;
-            }))
+                var description = descriptions[i];
+                var isDefault = i == descriptions.Count - 1;
+
+                // isDefault is used to mark the default API version in Scalar.
+                // This decides which version is selected by default when users visit the Scalar UI.
+                options.AddDocument(description.GroupName, description.GroupName, isDefault: isDefault)
+                    .AddPreferredSecuritySchemes("Keycloak")
+                    .AddAuthorizationCodeFlow("Keycloak", flow =>
+                    {
+                        flow.ClientId = keycloakOptions.ClientId;
+                        flow.ClientSecret = keycloakOptions.ClientSecret;
+                        flow.RedirectUri = keycloakOptions.RedirectUri;
+                        flow.Pkce = Pkce.Sha256;
+                    });
+            }
+        })
         .AllowAnonymous();
 }
 

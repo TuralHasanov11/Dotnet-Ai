@@ -54,17 +54,23 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
+Errors/ProblemExceptionHandler.cs
 Extensions.cs
-Identity/KeycloakOptions.cs
+Identity/
+ GroupAuthorizationHandler.cs
+ GroupRequirementAttribute.cs
+ KeycloakOptions.cs
+Monitoring/MachineNameEnricher.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  ServiceDefaults.AssemblyInfo.cs
  ServiceDefaults.GlobalUsings.g.cs
 OpenApi/
  ApiSecuritySchemeTransformer.cs
- InfoTransformer.cs
+ ApiVersioningExtensions.cs
  WebSecuritySchemeTransformer.cs
-ProblemExceptionHandler.cs
+Performance/RequestTimeMiddleware.cs
+Security/ContentTypeOptionsMiddleware.cs
 
 [metadataReferences]
 ../SharedKernel/obj/Debug/net10.0/ref/SharedKernel.dll
@@ -378,6 +384,10 @@ ProblemExceptionHandler.cs
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
 <NUGET>/
+ asp.versioning.abstractions/10.0.0/lib/net10.0/Asp.Versioning.Abstractions.dll
+ asp.versioning.http/10.0.0/lib/net10.0/Asp.Versioning.Http.dll
+ asp.versioning.mvc.apiexplorer/10.0.0/lib/net10.0/Asp.Versioning.Mvc.ApiExplorer.dll
+ asp.versioning.mvc/10.0.0/lib/net10.0/Asp.Versioning.Mvc.dll
  microsoft.aspnetcore.authentication.jwtbearer/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
  microsoft.aspnetcore.authentication.openidconnect/10.0.7/lib/net10.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
  microsoft.aspnetcore.diagnostics.middleware/10.5.0/lib/net10.0/Microsoft.AspNetCore.Diagnostics.Middleware.dll

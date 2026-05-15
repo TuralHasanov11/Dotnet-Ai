@@ -49,8 +49,24 @@ jobs:
       run: dotnet build ${{env.SOLUTION_PATH}} --configuration Release /p:RunAnalyzers=true --no-restore
     - name: Run Unit Tests and Coverage
       run: dotnet test --solution ${{env.SOLUTION_PATH}} --configuration Release --filter-trait "Category=Unit" --no-build --no-restore --verbosity normal
-    - name: Restore WEBAPP1_PROJECT
-      run: dotnet restore ${{env.WEBAPP1_PROJECT_PATH}}
+    - name: Restore AGENT_FRAMEWORK_QUICK_START_PROJECT
+      run: dotnet restore ${{env.AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH}}
+    # - name: "Install ef-core tools globally"
+    #   run: dotnet tool install --global dotnet-ef
+    # - name: "Create migration bundle"
+    #   run: | 
+    #     dotnet ef migrations bundle \
+    #       --project ${{env.AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH}} \
+    #       --startup-project ${{env.AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH}} \
+    #       --output-dir Data/Migrations \
+    #       --output efbundle
+    # - name: "Run migration bundle to apply any pending migrations"
+    #   run: |
+    #     if [ -z "${{ secrets.CONNECTION_STRING_DATABASE }}" ]; then
+    #       echo "Missing required secret: CONNECTION_STRING_DATABASE"
+    #       exit 1
+    #     fi
+    #     ./efbundle --connection "${{ secrets.CONNECTION_STRING_DATABASE }}"
     - name: Publish AGENT_FRAMEWORK_QUICK_START_PROJECT
       run: dotnet publish ${{env.AGENT_FRAMEWORK_QUICK_START_PROJECT_PATH}} -c Release --no-build --no-restore --property:PublishDir=${{env.AGENT_FRAMEWORK_QUICK_START_PUBLISH_DIR}}
     - name: Inspect publish output
