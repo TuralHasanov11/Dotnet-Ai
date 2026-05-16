@@ -1,11 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using SharedKernel.Compliance;
 
 namespace SharedKernel.Identity;
 
 public sealed class UserInfo
 {
-    [EuiiDataAttribute]
+    [EuiiData]
     public string UserId { get; }
     public string Name { get; }
     public string[] Roles { get; }

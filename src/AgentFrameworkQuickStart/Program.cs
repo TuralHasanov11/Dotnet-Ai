@@ -1,10 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using ServiceDefaults;
@@ -15,13 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddApiVersioning(options =>
-{
-    options.ApiVersionReader = new HeaderApiVersionReader("X-API-Version");
-    options.ReportApiVersions = true;
-});
-
 var openApiInfoOptions = builder.Configuration.GetSection("OpenApiInfo").Get<Dictionary<string, OpenApiInfo>>();
+
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<ApiSecuritySchemeTransformer>();
+});
 
 foreach (var version in openApiInfoOptions.Keys)
 {
@@ -46,16 +43,11 @@ builder.Services.AddAuthentication()
         options.Authority = oidcConfig["Authority"];
         options.Audience = oidcConfig["Audience"];
 
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudience = oidcConfig["Audience"],
-            ValidIssuer = oidcConfig["Authority"]
-        };
-
         options.MapInboundClaims = false;
+        options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+        options.TokenValidationParameters.RoleClaimType = "roles";
+
+        options.RequireHttpsMetadata = false;
     });
 
 builder.Services.AddAuthorization(options =>
@@ -80,7 +72,9 @@ app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi().AllowAnonymous();
+    app.MapOpenApi()
+        // .WithDocumentPerVersion() // Preview
+        .AllowAnonymous();
 
     var keycloakOptions = app.Services.GetRequiredService<IOptions<KeycloakOptions>>().Value;
 
@@ -106,7 +100,6 @@ if (app.Environment.IsDevelopment())
                     .AddAuthorizationCodeFlow("KeycloakSelf", flow =>
                     {
                         flow.ClientId = keycloakOptions.ClientId;
-                        flow.ClientSecret = keycloakOptions.ClientSecret;
                         flow.RedirectUri = keycloakOptions.RedirectUri;
                         flow.Pkce = Pkce.Sha256;
                     });
@@ -115,7 +108,9 @@ if (app.Environment.IsDevelopment())
         .AllowAnonymous();
 }
 
-app.MapGet("/", () => Assembly.GetExecutingAssembly().GetName().Name);
+app.MapGet("/", () => Assembly.GetExecutingAssembly().GetName().Name)
+    .AllowAnonymous()
+    .ExcludeFromDescription();
 
 
 await app.RunAsync();

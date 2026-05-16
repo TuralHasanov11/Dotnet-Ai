@@ -41,7 +41,7 @@ public class ApiSecuritySchemeTransformer(IAuthenticationSchemeProvider authenti
                         {
                             AuthorizationUrl = authorizationUrl,
                             TokenUrl = tokenUrl,
-                            Scopes = keycloakOptions.Value.Scopes.ToDictionary(scope => scope, scope => $"Access to {scope} API")
+                            Scopes = keycloakOptions.Value.Scopes.Split(' ').ToDictionary(scope => scope, scope => scope)
                         }
                     },
                     Description = "OAuth2 Authorization Code Flow (Keycloak)"

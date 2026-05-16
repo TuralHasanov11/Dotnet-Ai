@@ -167,7 +167,6 @@ if (app.Environment.IsDevelopment())
                     .AddAuthorizationCodeFlow("Keycloak", flow =>
                     {
                         flow.ClientId = keycloakOptions.ClientId;
-                        flow.ClientSecret = keycloakOptions.ClientSecret;
                         flow.RedirectUri = keycloakOptions.RedirectUri;
                         flow.Pkce = Pkce.Sha256;
                     });

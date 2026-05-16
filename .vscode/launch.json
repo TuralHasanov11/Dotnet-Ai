@@ -22,7 +22,7 @@
             "name": ".NET Core Launch WebApp1",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
+            "preLaunchTask": "build: WebApp1",
             "program": "${workspaceFolder}/src/WebApp1/bin/Debug/net10.0/WebApp1.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/WebApp1",
@@ -41,12 +41,21 @@
             "request": "attach"
         },
         {
-            "name": "Containers: .NET Launch",
+            "name": "Containers: .NET Launch WebApp1",
             "type": "docker",
             "request": "launch",
             "preLaunchTask": "docker-run: debug",
             "netCore": {
                 "appProject": "${workspaceFolder}/src/WebApp1/WebApp1.csproj"
+            }
+        },
+        {
+            "name": "Containers: .NET Launch AgentFrameworkQuickStart",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug AgentFrameworkQuickStart",
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
             }
         },
         {

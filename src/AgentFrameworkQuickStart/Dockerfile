@@ -1,30 +1,23 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 5002
-EXPOSE 5003
 
+ENV ASPNETCORE_URLS=http://+:5002
 
-# This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-ARG BUILD_CONFIGURATION=Release
+USER app
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG configuration=Release
 WORKDIR /src
-COPY ["Directory.Packages.props", "."]
-COPY ["Directory.Build.props", "."]
 COPY ["src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj", "src/AgentFrameworkQuickStart/"]
-RUN dotnet restore "./src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+RUN dotnet restore "src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
 COPY . .
 WORKDIR "/src/src/AgentFrameworkQuickStart"
-RUN dotnet build "./AgentFrameworkQuickStart.csproj" -c $BUILD_CONFIGURATION -o /app/build
-# This stage is used to publish the service project to be copied to the final stage
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./AgentFrameworkQuickStart.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet build "AgentFrameworkQuickStart.csproj" -c $configuration -o /app/build
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+FROM build AS publish
+ARG configuration=Release
+RUN dotnet publish "AgentFrameworkQuickStart.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

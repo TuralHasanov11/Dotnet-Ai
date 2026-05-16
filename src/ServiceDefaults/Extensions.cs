@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -117,6 +119,22 @@ public static class Extensions
             options.SerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
         });
 
+        builder.Services.AddApiVersioning(options =>
+        {
+            options.ApiVersionReader = new HeaderApiVersionReader("X-API-Version");
+            options.ReportApiVersions = true;
+        }).AddApiExplorer(options =>
+        {
+            // Calling "AddApiExplorer" is required for OpenAPI versioning to work correctly.
+            // Without this, the generated OpenAPI documents will not be versioned.
+
+            // GroupNameFormat specifies the format of the API version.
+            // Without this, versioning will use the literal group names. In our case, that would be 1.0.
+            // For compatibility with the "default" /openapi/v1.json behavior from Microsoft.AspNetCore.OpenApi, we use v'VVV' so we can retrieve it using v1.json.
+            // See https://github.com/dotnet/aspnet-api-versioning/wiki/Version-Format#custom-api-version-format-strings for more information about formatting API versions.
+            options.GroupNameFormat = "'v'VVV";
+        });
+
         return builder;
     }
 
@@ -163,6 +181,8 @@ public static class Extensions
 
     private static void ConfigureIdentity<TBuilder>(TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
+        builder.Services.AddHttpContextAccessor();
+
         builder.Services.AddOptions<KeycloakOptions>()
                 .BindConfiguration(KeycloakOptions.SectionName)
                 .ValidateDataAnnotations()
@@ -222,7 +242,7 @@ public static class Extensions
         builder.Services.AddStaticLogEnricher<MachineNameEnricher>();
 
         builder.Services.AddScoped<RequestTimeMiddleware>();
-        
+
         return builder;
     }
 

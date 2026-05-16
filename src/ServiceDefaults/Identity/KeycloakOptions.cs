@@ -18,5 +18,6 @@ public sealed class KeycloakOptions
     [Required]
     public string RedirectUri { get; set; } = string.Empty;
 
-    public IEnumerable<string> Scopes { get; set; } = [];
+    [Required]
+    public string Scopes { get; set; } = string.Empty;
 }
