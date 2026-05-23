@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "appId": "32cf1c28-4045-4382-85e5-e003d4cb7024",
+  "appDisplayName": "Power Apps Code App 1",
+  "region": "prod",
+  "environmentId": "6825a733-18c7-e194-9025-f86943865246",
+  "description": " ",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://localhost:3000",
+  "logoPath": "Default",
+  "connectionReferences": {},
+  "databaseReferences": {
+    "default.cds": {
+      "dataSources": {
+        "environment_39a902ba": {
+          "entitySetName": "Environment",
+          "logicalName": "environment_39a902ba",
+          "isHidden": false
+        }
+      },
+      "environmentVariableName": ""
+    }
+  }
+}
