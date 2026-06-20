@@ -4,7 +4,7 @@
  */
 
 // Models
-export * as WhoAmIModel from './models/WhoAmIModel';
+export * as Office365UsersModel from './models/Office365UsersModel';
 
 // Services
-export * from './services/WhoAmIService';
+export * from './services/Office365UsersService';

@@ -11,6 +11,15 @@ export default defineConfig({
     tailwindcss(),
     powerApps()
   ],
+  server: {
+    proxy: {
+      "/api/dummyjson": {
+        target: "https://dummyjson.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/dummyjson/, ""),
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

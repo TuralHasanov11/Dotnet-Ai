@@ -1,8 +1,9 @@
-import { createBrowserRouter } from "react-router-dom"
 import Layout from "@/pages/_layout"
 import HomePage from "@/pages/home"
 import NotFoundPage from "@/pages/not-found"
-import WhoAmIPage from "./pages/who-am-i"
+import { createBrowserRouter } from "react-router-dom"
+import MyProfilePage from "./pages/my-profile"
+import ExamplePage from "./pages/example"
 
 // IMPORTANT: Do not remove or modify the code below!
 // Normalize basename when hosted in Power Apps
@@ -18,10 +19,8 @@ export const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       { index: true, element: <HomePage /> },
-      {
-        path: "who-am-i",
-        element: <WhoAmIPage />,
-      }
+      { path: "my-profile", element: <MyProfilePage /> },
+      { path: "example", element: <ExamplePage /> }
     ],
   },
 ], { 
