@@ -62,8 +62,7 @@
             "name": "Docker Compose: Start Stack",
             "type": "node-terminal",
             "request": "launch",
-            "preLaunchTask": "compose: up",
-            "command": "start http://localhost:5000"
+            "preLaunchTask": "compose: up"
         },
         {
             "name": "Kubernetes: Deploy and Port-Forward WebApp1",
@@ -78,6 +77,15 @@
             "request": "launch",
             "preLaunchTask": "k8s: deploy",
             "command": "kubectl -n dotnet-ai port-forward svc/agent-framework-quick-start 5002:5002"
+        },
+        {
+            "name": "Containers: .NET Launch",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+            }
         }
     ]
 }

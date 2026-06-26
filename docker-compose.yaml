@@ -17,70 +17,70 @@ services:
       - ASPNETCORE_HTTPS_PORTS=5003
       - ASPNETCORE_URLS=http://+:5002
 
-  mcp-server-quick-start:
-    image: dotnet-ai/mcp-server-quick-start
-    build:
-      context: .
-      dockerfile: src/McpServerQuickStart/Dockerfile
-    container_name: mcp-server-quick-start
-    ports:
-    - "5004:5004"
-    - "5005:5005"
-    networks:
-    - dotnet-ai-network
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5004
-      - ASPNETCORE_HTTPS_PORTS=5005
-      - ASPNETCORE_URLS=http://+:5004
+  # mcp-server-quick-start:
+  #   image: dotnet-ai/mcp-server-quick-start
+  #   build:
+  #     context: .
+  #     dockerfile: src/McpServerQuickStart/Dockerfile
+  #   container_name: mcp-server-quick-start
+  #   ports:
+  #   - "5004:5004"
+  #   - "5005:5005"
+  #   networks:
+  #   - dotnet-ai-network
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_HTTP_PORTS=5004
+  #     - ASPNETCORE_HTTPS_PORTS=5005
+  #     - ASPNETCORE_URLS=http://+:5004
 
-  web-app-1:
-    image: dotnet-ai/webapp1
-    build:
-      context: .
-      dockerfile: src/WebApp1/Dockerfile
-    container_name: webapp1
-    ports:
-    - "5000:5000"
-    - "5001:5001"
-    networks:
-    - dotnet-ai-network
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5000
-      - ASPNETCORE_HTTPS_PORTS=5001
-      - ASPNETCORE_URLS=http://+:5000
-      - AgentFrameworkQuickStart__BaseUrl=http://agent-framework-quick-start:5002
+  # web-app-1:
+  #   image: dotnet-ai/webapp1
+  #   build:
+  #     context: .
+  #     dockerfile: src/WebApp1/Dockerfile
+  #   container_name: webapp1
+  #   ports:
+  #   - "5000:5000"
+  #   - "5001:5001"
+  #   networks:
+  #   - dotnet-ai-network
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_HTTP_PORTS=5000
+  #     - ASPNETCORE_HTTPS_PORTS=5001
+  #     - ASPNETCORE_URLS=http://+:5000
+  #     - AgentFrameworkQuickStart__BaseUrl=http://agent-framework-quick-start:5002
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.6.1
-    container_name: keycloak
-    command: start-dev
-    ports:
-      - "127.0.0.1:8080:8080"
-    environment:
-      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
-      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-    volumes:
-      - keycloak_data:/opt/keycloak/data
-    networks:
-      - dotnet-ai-network
+  # keycloak:
+  #   image: quay.io/keycloak/keycloak:26.6.1
+  #   container_name: keycloak
+  #   command: start-dev
+  #   ports:
+  #     - "127.0.0.1:8080:8080"
+  #   environment:
+  #     - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+  #     - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+  #   volumes:
+  #     - keycloak_data:/opt/keycloak/data
+  #   networks:
+  #     - dotnet-ai-network
 
-  web-app-2:
-    image: dotnet-ai/webapp2
-    container_name: webapp2
-    build:
-      context: ./src/web-app-2
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - HOST=0.0.0.0
-      - PORT=3000
-    depends_on:
-      - keycloak
-    networks:
-      - dotnet-ai-network
+  # web-app-2:
+  #   image: dotnet-ai/webapp2
+  #   container_name: webapp2
+  #   build:
+  #     context: ./src/web-app-2
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - HOST=0.0.0.0
+  #     - PORT=3000
+  #   depends_on:
+  #     - keycloak
+  #   networks:
+  #     - dotnet-ai-network
 
 networks:
   dotnet-ai-network:

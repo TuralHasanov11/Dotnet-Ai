@@ -6,7 +6,7 @@ specify init --here
 ### Start docker composer with override file
 
 ```sh
-docker-compose -f docker-compose.yaml -f docker-compose.override.yaml up -d --build
+docker compose -f docker-compose.yaml -f docker-compose.override.yaml up -d --build
 ```
 
 ### Export dev certificate for HTTPS (Windows PowerShell)
@@ -32,4 +32,10 @@ docker run -e GITHUB_AUTH_TOKEN=<your access token> gcr.io/openssf/scorecard:sta
 ### Add Project to Solution
 ```sh
 dotnet sln <solution-file>.sln add <project-file>.csproj
+```
+
+### Ollama
+```sh
+ollama pull qwen3.5:0.8b
+ollama run qwen3.5:0.8b
 ```

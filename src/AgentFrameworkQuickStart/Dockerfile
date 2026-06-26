@@ -8,6 +8,10 @@ USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG configuration=Release
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
+COPY ["Directory.Build.props", "."]
+COPY ["src/ServiceDefaults/ServiceDefaults.csproj", "src/ServiceDefaults/"]
+COPY ["src/SharedKernel/SharedKernel.csproj", "src/SharedKernel/"]
 COPY ["src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj", "src/AgentFrameworkQuickStart/"]
 RUN dotnet restore "src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
 COPY . .

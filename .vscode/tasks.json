@@ -2,238 +2,312 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build: AgentFrameworkQuickStart",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary;ForceNoAlign"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "build: WebApp1",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/src/WebApp1/WebApp1.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary;ForceNoAlign"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "publish: AgentFrameworkQuickStart",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "publish",
-        "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary;ForceNoAlign"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "publish: WebApp1",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "publish",
-        "${workspaceFolder}/src/WebApp1/WebApp1.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary;ForceNoAlign"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "watch: AgentFrameworkQuickStart",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "watch",
-        "run",
-        "--project",
-        "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "watch: WebApp1",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "watch",
-        "run",
-        "--project",
-        "${workspaceFolder}/src/WebApp1/WebApp1.csproj"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "compose: up",
-      "type": "process",
-      "command": "docker-compose",
-      "args": [
-        "-f",
-        "docker-compose.yaml",
-        "-f",
-        "docker-compose.override.yaml",
-        "up",
-        "-d",
-        "--build"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "compose: down",
-      "type": "process",
-      "command": "docker-compose",
-      "args": [
-        "-f",
-        "docker-compose.yaml",
-        "-f",
-        "docker-compose.override.yaml",
-        "down"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "compose: logs",
-      "type": "process",
-      "command": "docker-compose",
-      "args": [
-        "-f",
-        "docker-compose.yaml",
-        "-f",
-        "docker-compose.override.yaml",
-        "logs",
-        "-f"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "k8s: deploy",
-      "type": "process",
-      "command": "pwsh",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "kubectl apply -f k8s/dotnet-ai-namespace.yaml; kubectl apply -f k8s/agent-framework-quick-start-service-account.yaml; kubectl apply -f k8s/web-app1-service-account.yaml; kubectl apply -f k8s/configmap-reader-role.yaml; kubectl apply -f k8s/configmap-reader-role-binding.yaml; kubectl apply -f k8s/agent-framework-quick-start-config.yaml; kubectl apply -f k8s/web-app1-config.yaml; kubectl apply -f k8s/agent-framework-quick-start-service.yaml; kubectl apply -f k8s/web-app1-service.yaml"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "k8s: delete",
-      "type": "process",
-      "command": "pwsh",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "kubectl delete -f k8s/web-app1-service.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-service.yaml --ignore-not-found=true; kubectl delete -f k8s/web-app1-config.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-config.yaml --ignore-not-found=true; kubectl delete -f k8s/configmap-reader-role-binding.yaml --ignore-not-found=true; kubectl delete -f k8s/configmap-reader-role.yaml --ignore-not-found=true; kubectl delete -f k8s/web-app1-service-account.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-service-account.yaml --ignore-not-found=true"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "k8s: port-forward web-app1",
-      "type": "process",
-      "command": "kubectl",
-      "args": ["-n", "dotnet-ai", "port-forward", "svc/web-app1", "5000:5000"],
-      "problemMatcher": []
-    },
-    {
-      "label": "k8s: port-forward agent-framework-quick-start",
-      "type": "process",
-      "command": "kubectl",
-      "args": [
-        "-n",
-        "dotnet-ai",
-        "port-forward",
-        "svc/agent-framework-quick-start",
-        "5002:5002"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "type": "docker-build",
-      "label": "docker-build: debug AgentFrameworkQuickStart",
-      "dependsOn": ["build: AgentFrameworkQuickStart"],
-      "dockerBuild": {
-        "tag": "dotnet-ai/agent-framework-quick-start:dev",
-        "target": "base",
-        "dockerfile": "${workspaceFolder}/src/AgentFrameworkQuickStart/Dockerfile",
-        "context": "${workspaceFolder}",
-        "pull": true
-      },
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
-      }
-    },
-    {
-      "type": "docker-build",
-      "label": "docker-build: release AgentFrameworkQuickStart",
-      "dependsOn": ["build: AgentFrameworkQuickStart"],
-      "dockerBuild": {
-        "tag": "dotnet-ai/agent-framework-quick-start:latest",
-        "dockerfile": "${workspaceFolder}/src/AgentFrameworkQuickStart/Dockerfile",
-        "context": "${workspaceFolder}",
-        "platform": {
-          "os": "linux",
-          "architecture": "amd64"
-        },
-        "pull": true
-      },
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
-      }
-    },
-    {
-      "type": "docker-run",
-      "label": "docker-run: debug AgentFrameworkQuickStart",
-      "dependsOn": ["docker-build: debug AgentFrameworkQuickStart"],
-      "dockerRun": {
-        "image": "dotnet-ai/agent-framework-quick-start:dev",
-        "containerName": "dotnet-ai-agent-framework-quick-start-dev",
-        "ports": [
-          {
-            "containerPort": 5002,
-            "hostPort": 5002
-          }
+        "label": "build: AgentFrameworkQuickStart",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+            "build",
+            "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary;ForceNoAlign"
         ],
-        "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
-        },
-        "remove": true
-      },
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj",
-        "enableDebugging": true
-      }
+        "problemMatcher": "$msCompile"
     },
     {
-      "type": "docker-run",
-      "label": "docker-run: release AgentFrameworkQuickStart",
-      "dependsOn": ["docker-build: release AgentFrameworkQuickStart"],
-      "dockerRun": {
-        "image": "dotnet-ai/agent-framework-quick-start:latest",
-        "containerName": "dotnet-ai-agent-framework-quick-start-latest",
-        "ports": [
-          {
-            "containerPort": 5002,
-            "hostPort": 5002
-          }
+        "label": "build: WebApp1",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+            "build",
+            "${workspaceFolder}/src/WebApp1/WebApp1.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary;ForceNoAlign"
         ],
-        "env": {
-          "ASPNETCORE_ENVIRONMENT": "Production"
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "publish: AgentFrameworkQuickStart",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+            "publish",
+            "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary;ForceNoAlign"
+        ],
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "publish: WebApp1",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+            "publish",
+            "${workspaceFolder}/src/WebApp1/WebApp1.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary;ForceNoAlign"
+        ],
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "watch: AgentFrameworkQuickStart",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+            "watch",
+            "run",
+            "--project",
+            "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+        ],
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "watch: WebApp1",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+            "watch",
+            "run",
+            "--project",
+            "${workspaceFolder}/src/WebApp1/WebApp1.csproj"
+        ],
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "compose: up",
+        "type": "process",
+        "command": "docker-compose",
+        "args": [
+            "-f",
+            "docker-compose.yaml",
+            "-f",
+            "docker-compose.override.yaml",
+            "up",
+            "-d",
+            "--build"
+        ],
+        "problemMatcher": []
+    },
+    {
+        "label": "compose: down",
+        "type": "process",
+        "command": "docker-compose",
+        "args": [
+            "-f",
+            "docker-compose.yaml",
+            "-f",
+            "docker-compose.override.yaml",
+            "down"
+        ],
+        "problemMatcher": []
+    },
+    {
+        "label": "compose: logs",
+        "type": "process",
+        "command": "docker-compose",
+        "args": [
+            "-f",
+            "docker-compose.yaml",
+            "-f",
+            "docker-compose.override.yaml",
+            "logs",
+            "-f"
+        ],
+        "problemMatcher": []
+    },
+    {
+        "label": "k8s: deploy",
+        "type": "process",
+        "command": "pwsh",
+        "args": [
+            "-NoProfile",
+            "-Command",
+            "kubectl apply -f k8s/dotnet-ai-namespace.yaml; kubectl apply -f k8s/agent-framework-quick-start-service-account.yaml; kubectl apply -f k8s/web-app1-service-account.yaml; kubectl apply -f k8s/configmap-reader-role.yaml; kubectl apply -f k8s/configmap-reader-role-binding.yaml; kubectl apply -f k8s/agent-framework-quick-start-config.yaml; kubectl apply -f k8s/web-app1-config.yaml; kubectl apply -f k8s/agent-framework-quick-start-service.yaml; kubectl apply -f k8s/web-app1-service.yaml"
+        ],
+        "problemMatcher": []
+    },
+    {
+        "label": "k8s: delete",
+        "type": "process",
+        "command": "pwsh",
+        "args": [
+            "-NoProfile",
+            "-Command",
+            "kubectl delete -f k8s/web-app1-service.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-service.yaml --ignore-not-found=true; kubectl delete -f k8s/web-app1-config.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-config.yaml --ignore-not-found=true; kubectl delete -f k8s/configmap-reader-role-binding.yaml --ignore-not-found=true; kubectl delete -f k8s/configmap-reader-role.yaml --ignore-not-found=true; kubectl delete -f k8s/web-app1-service-account.yaml --ignore-not-found=true; kubectl delete -f k8s/agent-framework-quick-start-service-account.yaml --ignore-not-found=true"
+        ],
+        "problemMatcher": []
+    },
+    {
+        "label": "k8s: port-forward web-app1",
+        "type": "process",
+        "command": "kubectl",
+        "args": [
+            "-n",
+            "dotnet-ai",
+            "port-forward",
+            "svc/web-app1",
+            "5000:5000"
+        ],
+        "problemMatcher": []
+    },
+    {
+        "label": "k8s: port-forward agent-framework-quick-start",
+        "type": "process",
+        "command": "kubectl",
+        "args": [
+            "-n",
+            "dotnet-ai",
+            "port-forward",
+            "svc/agent-framework-quick-start",
+            "5002:5002"
+        ],
+        "problemMatcher": []
+    },
+    {
+        "type": "docker-build",
+        "label": "docker-build: debug AgentFrameworkQuickStart",
+        "dependsOn": [
+            "build: AgentFrameworkQuickStart"
+        ],
+        "dockerBuild": {
+            "tag": "dotnet-ai/agent-framework-quick-start:dev",
+            "target": "base",
+            "dockerfile": "${workspaceFolder}/src/AgentFrameworkQuickStart/Dockerfile",
+            "context": "${workspaceFolder}",
+            "pull": true
         },
-        "remove": true
-      },
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
-      }
+        "netCore": {
+            "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+        }
+    },
+    {
+        "type": "docker-build",
+        "label": "docker-build: release AgentFrameworkQuickStart",
+        "dependsOn": [
+            "build: AgentFrameworkQuickStart"
+        ],
+        "dockerBuild": {
+            "tag": "dotnet-ai/agent-framework-quick-start:latest",
+            "dockerfile": "${workspaceFolder}/src/AgentFrameworkQuickStart/Dockerfile",
+            "context": "${workspaceFolder}",
+            "platform": {
+                "os": "linux",
+                "architecture": "amd64"
+            },
+            "pull": true
+        },
+        "netCore": {
+            "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+        }
+    },
+    {
+        "type": "docker-run",
+        "label": "docker-run: debug AgentFrameworkQuickStart",
+        "dependsOn": [
+            "docker-build: debug AgentFrameworkQuickStart"
+        ],
+        "dockerRun": {
+            "image": "dotnet-ai/agent-framework-quick-start:dev",
+            "containerName": "dotnet-ai-agent-framework-quick-start-dev",
+            "ports": [
+                {
+                    "containerPort": 5002,
+                    "hostPort": 5002
+                }
+            ],
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "remove": true
+        },
+        "netCore": {
+            "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj",
+            "enableDebugging": true
+        }
+    },
+    {
+        "type": "docker-run",
+        "label": "docker-run: release AgentFrameworkQuickStart",
+        "dependsOn": [
+            "docker-build: release AgentFrameworkQuickStart"
+        ],
+        "dockerRun": {
+            "image": "dotnet-ai/agent-framework-quick-start:latest",
+            "containerName": "dotnet-ai-agent-framework-quick-start-latest",
+            "ports": [
+                {
+                    "containerPort": 5002,
+                    "hostPort": 5002
+                }
+            ],
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Production"
+            },
+            "remove": true
+        },
+        "netCore": {
+            "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+        }
+    },
+    {
+        "type": "docker-build",
+        "label": "docker-build: debug",
+        "dependsOn": [
+            "build"
+        ],
+        "dockerBuild": {
+            "tag": "dotnetai:dev",
+            "target": "base",
+            "dockerfile": "${workspaceFolder}/src/AgentFrameworkQuickStart/Dockerfile",
+            "context": "${workspaceFolder}",
+            "pull": true
+        },
+        "netCore": {
+            "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+        }
+    },
+    {
+        "type": "docker-build",
+        "label": "docker-build: release",
+        "dependsOn": [
+            "build"
+        ],
+        "dockerBuild": {
+            "tag": "dotnetai:latest",
+            "dockerfile": "${workspaceFolder}/src/AgentFrameworkQuickStart/Dockerfile",
+            "context": "${workspaceFolder}",
+            "platform": {
+                "os": "linux",
+                "architecture": "amd64"
+            },
+            "pull": true
+        },
+        "netCore": {
+            "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+        }
+    },
+    {
+        "type": "docker-run",
+        "label": "docker-run: debug",
+        "dependsOn": [
+            "docker-build: debug"
+        ],
+        "dockerRun": {},
+        "netCore": {
+            "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj",
+            "enableDebugging": true
+        }
+    },
+    {
+        "type": "docker-run",
+        "label": "docker-run: release",
+        "dependsOn": [
+            "docker-build: release"
+        ],
+        "dockerRun": {},
+        "netCore": {
+            "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+        }
     }
-  ]
+]
 }
