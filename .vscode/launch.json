@@ -62,7 +62,7 @@
             "name": "Docker Compose: Start Stack",
             "type": "node-terminal",
             "request": "launch",
-            "preLaunchTask": "compose: up"
+            "command": "docker compose -f docker-compose.yaml -f docker-compose.override.yaml up -d --build"
         },
         {
             "name": "Kubernetes: Deploy and Port-Forward WebApp1",

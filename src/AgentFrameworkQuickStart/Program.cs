@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using GitHub.Copilot;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,8 +16,8 @@ using OpenAI.Chat;
 using AgentFrameworkQuickStart.Tools;
 using AgentFrameworkQuickStart.Workflows;
 using Microsoft.Agents.AI.Workflows;
-using System.Text;
 using SharedKernel.Identity;
+using AgentFrameworkQuickStart.Adapters;
 
 var builder = WebApplication.CreateBuilder(args);
 const string KeycloakSecurityScheme = "Keycloak";
@@ -80,7 +79,14 @@ builder.Services.AddKeyedSingleton("chat-model-1", (_, _) =>
         .AsIChatClient()
         .AsBuilder()
         // .Use(DurationChatClientMiddleware)
-        // .UseAIContextProviders(new ChatContextProvider())
+        .UseAIContextProviders(
+            new TextSearchProvider(
+                SearchAdapter.Adapter, 
+                new TextSearchProviderOptions()
+                {
+                    SearchTime = TextSearchProviderOptions.TextSearchBehavior.BeforeAIInvoke,
+                })
+        )
         .Build();
     return responsesClient;
 });
@@ -122,6 +128,30 @@ builder.AddAIAgent(
 builder.AddAIAgent("agent-1", instructions: "you are agent 1!");
 builder.AddAIAgent("agent-2", instructions: "you are agent 2!");
 
+builder.AddAIAgent("RAG", (sp, _) =>
+{
+    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
+        .AsAIAgent(new ChatClientAgentOptions
+        {
+            Name = "RAG",
+            ChatOptions = new() { Instructions = "You are a helpful support specialist. Answer questions using the provided context and cite the source document when available." },
+            AIContextProviders = [
+                new TextSearchProvider(SearchAdapter.Adapter, new TextSearchProviderOptions()
+                {
+                    SearchTime = TextSearchProviderOptions.TextSearchBehavior.BeforeAIInvoke,
+                })],
+            // Since we are using ChatCompletion which stores chat history locally, we can also add a message filter
+            // that removes messages produced by the TextSearchProvider before they are added to the chat history, so that
+            // we don't bloat chat history with all the search result messages.
+            // By default the chat history provider will store all messages, except for those that came from chat history in the first place.
+            // We also want to maintain that exclusion here.
+            ChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
+            {
+                StorageInputRequestMessageFilter = messages => messages.Where(m => m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.AIContextProvider && m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.ChatHistory)
+            })
+        });
+});
+
 // ### Workflows
 builder.AddWorkflow("my-workflow", (sp, key) =>
 {
@@ -136,7 +166,7 @@ builder.AddWorkflow("TextWorkflow", (sp, key) =>
     var uppercase = TextWorkflow.UppercaseTextExecutor;
     WorkflowBuilder workflowBuilder = new(uppercase);
     workflowBuilder.AddEdge(uppercase, reverse).WithOutputFrom(reverse);
-    var workflow = workflowBuilder.Build();
+    var workflow = workflowBuilder.WithName(key).Build();
 
     return workflow;
 });
@@ -229,6 +259,17 @@ app.MapGet("/person", async ([FromKeyedServices("Person")] AIAgent agent) =>
 })
     .AllowAnonymous()
     .Produces<UserInfo>();
+
+// generate an endpoint for rag agent
+app.MapGet("/rag", async ([FromKeyedServices("RAG")] AIAgent agent) =>
+{
+    Microsoft.Extensions.AI.ChatMessage message = new(ChatRole.User, [
+        new TextContent("What is the return policy for Contoso Outdoors?")
+    ]);
+
+    var response = await agent.RunAsync(message);
+    return Results.Ok(response.Text);
+}).AllowAnonymous();
 
 
 app.MapGet("/text-workflow", async ([FromKeyedServices("TextWorkflow")] Workflow workflow) =>
