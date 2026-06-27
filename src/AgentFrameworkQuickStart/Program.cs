@@ -18,6 +18,7 @@ using AgentFrameworkQuickStart.Tools;
 using AgentFrameworkQuickStart.Workflows;
 using Microsoft.Agents.AI.Workflows;
 using System.Text;
+using SharedKernel.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 const string KeycloakSecurityScheme = "Keycloak";
@@ -71,16 +72,23 @@ builder.Services.AddHealthChecks();
 //     new Uri("http://host.docker.internal:11434"),
 //     modelId: "qwen3.5:0.8b"));
 
-
-builder.Services.AddKeyedSingleton("chat-model-1", (_, _) => {
+// ### AI Clients
+builder.Services.AddKeyedSingleton("chat-model-1", (_, _) =>
+{
     var client = new OpenAIClient(builder.Configuration["OpenAIKey"]);
-    var responsesClient = client.GetChatClient("gpt-4o-mini");
+    var responsesClient = client.GetChatClient("gpt-4o-mini")
+        .AsIChatClient()
+        .AsBuilder()
+        // .Use(DurationChatClientMiddleware)
+        // .UseAIContextProviders(new ChatContextProvider())
+        .Build();
     return responsesClient;
 });
 
+// ### Agents
 builder.AddAIAgent("Hello", (sp, _) =>
 {
-    return sp.GetRequiredKeyedService<ChatClient>("chat-model-1")
+    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
         .AsAIAgent(
             name: "Hello",
             instructions: "You are a helpful assistant that greets people.");
@@ -88,11 +96,21 @@ builder.AddAIAgent("Hello", (sp, _) =>
 
 builder.AddAIAgent("Weather", (sp, _) =>
 {
-    return sp.GetRequiredKeyedService<ChatClient>("chat-model-1")
+    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
         .AsAIAgent(
             name: "Weather",
             instructions: "You are a helpful weather assistant that provides weather information.",
             tools: [AIFunctionFactory.Create(WeatherTool.GetWeather)]);
+}).WithInMemorySessionStore();
+
+
+builder.AddAIAgent("Person", (sp, _) =>
+{
+    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
+        .AsAIAgent(
+            name: "Person",
+            instructions: "You are a helpful assistant that provides information about people.",
+            tools: [AIFunctionFactory.Create(PersonTool.GetPersonInfo)]);
 });
 
 builder.AddAIAgent(
@@ -101,7 +119,19 @@ builder.AddAIAgent(
     description: "An agent that speaks like a pirate",
     chatClientServiceKey: "chat-model-2");
 
-builder.Services.AddKeyedSingleton("TextWorkflow", (sp, _) => {
+builder.AddAIAgent("agent-1", instructions: "you are agent 1!");
+builder.AddAIAgent("agent-2", instructions: "you are agent 2!");
+
+// ### Workflows
+builder.AddWorkflow("my-workflow", (sp, key) =>
+{
+    var agent1 = sp.GetRequiredKeyedService<AIAgent>("agent-1");
+    var agent2 = sp.GetRequiredKeyedService<AIAgent>("agent-2");
+    return AgentWorkflowBuilder.BuildSequential(key, [agent1, agent2]);
+}).AddAsAIAgent(); // Now the workflow can be used as an agent
+
+builder.AddWorkflow("TextWorkflow", (sp, key) =>
+{
     var reverse = new TextWorkflow.ReverseTextExecutor();
     var uppercase = TextWorkflow.UppercaseTextExecutor;
     WorkflowBuilder workflowBuilder = new(uppercase);
@@ -175,9 +205,31 @@ app.MapGet("/pirate", async ([FromKeyedServices("Pirate")] AIAgent agent) =>
 
 app.MapGet("/weather", async ([FromKeyedServices("Weather")] AIAgent agent) =>
 {
-    AgentResponse response = await agent.RunAsync("What is the weather like in Hannover?");
-    return Results.Ok(response);
+    Microsoft.Extensions.AI.ChatMessage message = new(ChatRole.User, [
+        new TextContent("What is the weather like in Hannover?")
+    ]);
+
+    var response = await agent.RunAsync(message);
+    return Results.Ok(response.Text);
 }).AllowAnonymous();
+
+app.MapGet("/person", async ([FromKeyedServices("Person")] AIAgent agent) =>
+{
+    Microsoft.Extensions.AI.ChatMessage message = new(ChatRole.User, [
+        new TextContent("Please provide information about John Smith, who is a 35-year-old software engineer.")
+    ]);
+
+    AgentRunOptions runOptions = new()
+    {
+        ResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat.ForJsonSchema<UserInfo>()
+    };
+
+    var response = await agent.RunAsync<UserInfo>(message, options: runOptions);
+    return Results.Ok(response.Result);
+})
+    .AllowAnonymous()
+    .Produces<UserInfo>();
+
 
 app.MapGet("/text-workflow", async ([FromKeyedServices("TextWorkflow")] Workflow workflow) =>
 {

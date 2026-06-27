@@ -28,8 +28,6 @@ public sealed class UserInfo
         Wids = wids;
     }
 
-    public bool IsAnonymous => UserId == Anonymous.UserId;
-
     public static UserInfo FromClaimsPrincipal(ClaimsPrincipal principal) =>
         new(GetRequiredClaim(principal, UserIdClaimType),
             GetRequiredClaim(principal, NameClaimType),
@@ -55,11 +53,4 @@ public sealed class UserInfo
             principal.FindFirst(claimType)?.Value ??
             throw new InvalidOperationException(
                 $"Could not find required '{claimType}' claim.");
-
-    public static readonly UserInfo Anonymous = new(
-        "anonymous",
-        "Anonymous",
-        [],
-        [],
-        []);
 }
