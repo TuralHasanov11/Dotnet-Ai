@@ -84,7 +84,7 @@
             "request": "launch",
             "preLaunchTask": "docker-run: debug",
             "netCore": {
-                "appProject": "${workspaceFolder}/src/AgentFrameworkQuickStart/AgentFrameworkQuickStart.csproj"
+                "appProject": "${workspaceFolder}/src/WebApi1/WebApi1.csproj"
             }
         }
     ]

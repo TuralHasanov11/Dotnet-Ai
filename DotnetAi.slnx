@@ -4,6 +4,7 @@
     <Project Path="src/McpServerQuickStart/McpServerQuickStart.csproj" />
     <Project Path="src/ServiceDefaults/ServiceDefaults.csproj" />
     <Project Path="src/SharedKernel/SharedKernel.csproj" />
+    <Project Path="src/WebApi1/WebApi1.csproj" />
     <Project Path="src/WebApp1/WebApp1.csproj" />
   </Folder>
   <Folder Name="/tests/">

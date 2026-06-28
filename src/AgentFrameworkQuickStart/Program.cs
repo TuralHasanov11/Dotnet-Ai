@@ -81,7 +81,7 @@ builder.Services.AddKeyedSingleton("chat-model-1", (_, _) =>
         // .Use(DurationChatClientMiddleware)
         .UseAIContextProviders(
             new TextSearchProvider(
-                SearchAdapter.Adapter, 
+                SearchAdapter.Adapter,
                 new TextSearchProviderOptions()
                 {
                     SearchTime = TextSearchProviderOptions.TextSearchBehavior.BeforeAIInvoke,
