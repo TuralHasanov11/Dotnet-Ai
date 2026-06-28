@@ -14,7 +14,6 @@ using WebApi1.Features.Onboarding;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.Postgresql;
-using Wolverine.Transports.SharedMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 

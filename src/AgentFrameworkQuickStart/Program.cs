@@ -72,21 +72,17 @@ builder.Services.AddHealthChecks();
 //     modelId: "qwen3.5:0.8b"));
 
 // ### AI Clients
+
+var SourceName = Assembly.GetExecutingAssembly().GetName().Name;
+
 builder.Services.AddKeyedSingleton("chat-model-1", (_, _) =>
 {
     var client = new OpenAIClient(builder.Configuration["OpenAIKey"]);
     var responsesClient = client.GetChatClient("gpt-4o-mini")
         .AsIChatClient()
         .AsBuilder()
+        .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = false)    // Enable OpenTelemetry instrumentation with sensitive data
         // .Use(DurationChatClientMiddleware)
-        .UseAIContextProviders(
-            new TextSearchProvider(
-                SearchAdapter.Adapter,
-                new TextSearchProviderOptions()
-                {
-                    SearchTime = TextSearchProviderOptions.TextSearchBehavior.BeforeAIInvoke,
-                })
-        )
         .Build();
     return responsesClient;
 });
@@ -100,13 +96,13 @@ builder.AddAIAgent("Hello", (sp, _) =>
             instructions: "You are a helpful assistant that greets people.");
 });
 
-builder.AddAIAgent("Weather", (sp, _) =>
+builder.AddAIAgent("WeatherAgent", (sp, _) =>
 {
     return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
         .AsAIAgent(
-            name: "Weather",
+            name: "WeatherAgent",
             instructions: "You are a helpful weather assistant that provides weather information.",
-            tools: [AIFunctionFactory.Create(WeatherTool.GetWeather)]);
+            tools: [AIFunctionFactory.Create(WeatherTool.GetWeather, name: "get_weather")]);
 }).WithInMemorySessionStore();
 
 
@@ -233,7 +229,7 @@ app.MapGet("/pirate", async ([FromKeyedServices("Pirate")] AIAgent agent) =>
     return Results.Ok(await agent.RunAsync("Ahoy there! How are you doing?"));
 }).AllowAnonymous();
 
-app.MapGet("/weather", async ([FromKeyedServices("Weather")] AIAgent agent) =>
+app.MapGet("/weather", async ([FromKeyedServices("WeatherAgent")] AIAgent agent) =>
 {
     Microsoft.Extensions.AI.ChatMessage message = new(ChatRole.User, [
         new TextContent("What is the weather like in Hannover?")
