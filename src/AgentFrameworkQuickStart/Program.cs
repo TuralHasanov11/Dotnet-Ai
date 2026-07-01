@@ -18,6 +18,8 @@ using AgentFrameworkQuickStart.Workflows;
 using Microsoft.Agents.AI.Workflows;
 using SharedKernel.Identity;
 using AgentFrameworkQuickStart.Adapters;
+using AgentFrameworkQuickStart.Skills;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 const string KeycloakSecurityScheme = "Keycloak";
@@ -167,6 +169,25 @@ builder.AddWorkflow("TextWorkflow", (sp, key) =>
     return workflow;
 });
 
+// ### Agent Skills
+var unitConverterSkill = new UnitConverterSkill();
+#pragma warning disable MAAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+var skillsProvider = new AgentSkillsProviderBuilder()
+    .UseSkill(unitConverterSkill)                                  // AgentClassSkill
+    .Build();
+#pragma warning restore MAAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
+builder.AddAIAgent("UnitConverterAgent", (sp, _) =>
+{
+    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
+        .AsAIAgent(new ChatClientAgentOptions
+        {
+            Name = "UnitConverterAgent",
+            ChatOptions = new() { Instructions = "You are a helpful assistant that converts between common units using a multiplication factor. Use when asked to convert miles, kilometers, pounds, or kilograms." },
+            AIContextProviders = [skillsProvider],
+        });
+});
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
@@ -267,12 +288,21 @@ app.MapGet("/rag", async ([FromKeyedServices("RAG")] AIAgent agent) =>
     return Results.Ok(response.Text);
 }).AllowAnonymous();
 
-
 app.MapGet("/text-workflow", async ([FromKeyedServices("TextWorkflow")] Workflow workflow) =>
 {
     await using var run = await InProcessExecution.RunAsync(workflow, "Hello, World!");
 
     return Results.Ok(run.NewEvents.Where(e => e is ExecutorCompletedEvent).Select(e => ((ExecutorCompletedEvent)e).Data));
+}).AllowAnonymous();
+
+app.MapPost("/unit-converter", async ([FromKeyedServices("UnitConverterAgent")] AIAgent agent, [FromQuery] double value, [FromQuery] string fromUnit, [FromQuery] string toUnit) =>
+{
+    Microsoft.Extensions.AI.ChatMessage message = new(ChatRole.User, [
+        new TextContent($"Please convert {value} {fromUnit} to {toUnit}.")
+    ]);
+
+    var response = await agent.RunAsync(message);
+    return Results.Ok(response.Text);
 }).AllowAnonymous();
 
 await app.RunAsync();
