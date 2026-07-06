@@ -17,47 +17,46 @@ services:
       - ASPNETCORE_HTTPS_PORTS=5003
       - ASPNETCORE_URLS=http://+:5002
   
-  web-api-1:
-    image: dotnet-ai/web-api-1
-    build:
-      context: .
-      dockerfile: src/WebApi1/Dockerfile
-    container_name: web-api-1
-    ports:
-    - "5006:5006"
-    - "5007:5007"
-    networks:
-    - dotnet-ai-network
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5006
-      - ASPNETCORE_HTTPS_PORTS=5007
-      - ASPNETCORE_URLS=http://+:5006
-      - ConnectionStrings__Database=Host=web-api-1-database;Port=5432;Database=webapi1db;Username=postgres;Password=password
-    depends_on:
-      web-api-1-database:
-        condition: service_healthy
-    restart: unless-stopped
+  # web-api-1:
+  #   image: dotnet-ai/web-api-1
+  #   build:
+  #     context: .
+  #     dockerfile: src/WebApi1/Dockerfile
+  #   container_name: web-api-1
+  #   ports:
+  #   - "5006:5006"
+  #   - "5007:5007"
+  #   networks:
+  #   - dotnet-ai-network
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_HTTP_PORTS=5006
+  #     - ASPNETCORE_HTTPS_PORTS=5007
+  #     - ASPNETCORE_URLS=http://+:5006
+  #     - ConnectionStrings__Database=Host=web-api-1-database;Port=5432;Database=webapi1db;Username=postgres;Password=password
+  #   depends_on:
+  #     web-api-1-database:
+  #       condition: service_healthy
+  #   restart: unless-stopped
   
-  # generate postgres setup for web-api-1-database
-  web-api-1-database:
-    image: postgres:18-alpine
-    container_name: web-api-1-database
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: webapi1db
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./containers/web-api-1-database-data:/var/lib/postgresql/data
-    networks:
-      - dotnet-ai-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d webapi1db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # web-api-1-database:
+  #   image: postgres:18-alpine
+  #   container_name: web-api-1-database
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: password
+  #     POSTGRES_DB: webapi1db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./containers/web-api-1-database-data:/var/lib/postgresql/data
+  #   networks:
+  #     - dotnet-ai-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres -d webapi1db"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
       
   # mcp-server-quick-start:
   #   image: dotnet-ai/mcp-server-quick-start

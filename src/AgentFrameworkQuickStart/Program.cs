@@ -19,7 +19,10 @@ using Microsoft.Agents.AI.Workflows;
 using SharedKernel.Identity;
 using AgentFrameworkQuickStart.Adapters;
 using AgentFrameworkQuickStart.Skills;
+using AgentFrameworkQuickStart.ContextProviders;
+using AgentFrameworkQuickStart.Services;
 using Microsoft.AspNetCore.Mvc;
+using AgentFrameworkQuickStart.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 const string KeycloakSecurityScheme = "Keycloak";
@@ -76,6 +79,14 @@ builder.Services.AddHealthChecks();
 // ### AI Clients
 
 var SourceName = Assembly.GetExecutingAssembly().GetName().Name;
+var ragChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
+{
+    StorageInputRequestMessageFilter = messages => messages.Where(m => m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.AIContextProvider && m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.ChatHistory)
+});
+
+builder.Services.AddSingleton(ragChatHistoryProvider);
+builder.Services.AddSingleton<SimpleServiceMemoryProvider>();
+builder.Services.AddSingleton<RagConversationStore>();
 
 builder.Services.AddKeyedSingleton("chat-model-1", (_, _) =>
 {
@@ -84,27 +95,28 @@ builder.Services.AddKeyedSingleton("chat-model-1", (_, _) =>
         .AsIChatClient()
         .AsBuilder()
         .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = false)    // Enable OpenTelemetry instrumentation with sensitive data
-        // .Use(DurationChatClientMiddleware)
+        .Use(getResponseFunc: LoggingChatMiddleware.Handle, getStreamingResponseFunc: null)
         .Build();
     return responsesClient;
 });
 
 // ### Agents
-builder.AddAIAgent("Hello", (sp, _) =>
-{
-    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
-        .AsAIAgent(
-            name: "Hello",
-            instructions: "You are a helpful assistant that greets people.");
-});
-
 builder.AddAIAgent("WeatherAgent", (sp, _) =>
 {
     return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
         .AsAIAgent(
             name: "WeatherAgent",
             instructions: "You are a helpful weather assistant that provides weather information.",
-            tools: [AIFunctionFactory.Create(WeatherTool.GetWeather, name: "get_weather")]);
+            tools: [AIFunctionFactory.Create(WeatherTool.GetWeather, name: "get_weather")])
+        .AsBuilder()
+        .Use(
+            runFunc: MessageCounterAgentRunMiddleware.Handle,
+            runStreamingFunc: MessageCounterAgentRunMiddleware.HandleStreaming)
+        .Use(
+            runFunc: ExceptionHandlingMiddleware.Handle,
+            runStreamingFunc: null
+        )
+        .Build();
 }).WithInMemorySessionStore();
 
 
@@ -128,46 +140,26 @@ builder.AddAIAgent("agent-2", instructions: "you are agent 2!");
 
 builder.AddAIAgent("RAG", (sp, _) =>
 {
+    var simpleServiceMemory = sp.GetRequiredService<SimpleServiceMemoryProvider>();
+    var chatHistoryProvider = sp.GetRequiredService<InMemoryChatHistoryProvider>();
+
     return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
         .AsAIAgent(new ChatClientAgentOptions
         {
             Name = "RAG",
             ChatOptions = new() { Instructions = "You are a helpful support specialist. Answer questions using the provided context and cite the source document when available." },
             AIContextProviders = [
+                simpleServiceMemory,
                 new TextSearchProvider(SearchAdapter.Adapter, new TextSearchProviderOptions()
                 {
                     SearchTime = TextSearchProviderOptions.TextSearchBehavior.BeforeAIInvoke,
                 })],
-            // Since we are using ChatCompletion which stores chat history locally, we can also add a message filter
-            // that removes messages produced by the TextSearchProvider before they are added to the chat history, so that
-            // we don't bloat chat history with all the search result messages.
-            // By default the chat history provider will store all messages, except for those that came from chat history in the first place.
-            // We also want to maintain that exclusion here.
-            ChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
-            {
-                StorageInputRequestMessageFilter = messages => messages.Where(m => m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.AIContextProvider && m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.ChatHistory)
-            })
+            ChatHistoryProvider = chatHistoryProvider
         });
 });
 
 // ### Workflows
-builder.AddWorkflow("my-workflow", (sp, key) =>
-{
-    var agent1 = sp.GetRequiredKeyedService<AIAgent>("agent-1");
-    var agent2 = sp.GetRequiredKeyedService<AIAgent>("agent-2");
-    return AgentWorkflowBuilder.BuildSequential(key, [agent1, agent2]);
-}).AddAsAIAgent(); // Now the workflow can be used as an agent
-
-builder.AddWorkflow("TextWorkflow", (sp, key) =>
-{
-    var reverse = new TextWorkflow.ReverseTextExecutor();
-    var uppercase = TextWorkflow.UppercaseTextExecutor;
-    WorkflowBuilder workflowBuilder = new(uppercase);
-    workflowBuilder.AddEdge(uppercase, reverse).WithOutputFrom(reverse);
-    var workflow = workflowBuilder.WithName(key).Build();
-
-    return workflow;
-});
+builder.AddWorkflows();
 
 // ### Agent Skills
 var unitConverterSkill = new UnitConverterSkill();
@@ -239,12 +231,6 @@ app.MapGet("/", () => Assembly.GetExecutingAssembly().GetName().Name)
     .AllowAnonymous()
     .ExcludeFromDescription();
 
-app.MapGet("/hello", async ([FromKeyedServices("Hello")] AIAgent agent) =>
-{
-    AgentResponse response = await agent.RunAsync("Hi there!");
-    return Results.Ok(response);
-}).AllowAnonymous();
-
 app.MapGet("/pirate", async ([FromKeyedServices("Pirate")] AIAgent agent) =>
 {
     return Results.Ok(await agent.RunAsync("Ahoy there! How are you doing?"));
@@ -277,18 +263,50 @@ app.MapGet("/person", async ([FromKeyedServices("Person")] AIAgent agent) =>
     .AllowAnonymous()
     .Produces<UserInfo>();
 
-// generate an endpoint for rag agent
-app.MapGet("/rag", async ([FromKeyedServices("RAG")] AIAgent agent) =>
+app.MapGet("/rag", async (
+    [FromKeyedServices("RAG")] AIAgent agent,
+    RagConversationStore conversationStore,
+    [FromQuery] string? sessionId,
+    [FromQuery] string? message) =>
 {
-    Microsoft.Extensions.AI.ChatMessage message = new(ChatRole.User, [
-        new TextContent("What is the return policy for Contoso Outdoors?")
+    var session = await conversationStore.GetOrCreateSessionAsync(sessionId, async () => await agent.CreateSessionAsync());
+    var userMessageText = string.IsNullOrWhiteSpace(message)
+        ? "What is the return policy for Contoso Outdoors?"
+        : message.Trim();
+
+    Microsoft.Extensions.AI.ChatMessage userMessage = new(ChatRole.User, [
+        new TextContent(userMessageText)
     ]);
 
-    var response = await agent.RunAsync(message);
-    return Results.Ok(response.Text);
+    var response = await agent.RunAsync(userMessage, session);
+    return Results.Ok(new
+    {
+        sessionId = string.IsNullOrWhiteSpace(sessionId) ? RagConversationStore.DefaultSessionId : sessionId.Trim(),
+        response.Text
+    });
 }).AllowAnonymous();
 
-app.MapGet("/text-workflow", async ([FromKeyedServices("TextWorkflow")] Workflow workflow) =>
+app.MapGet("/rag/history", async (
+    RagConversationStore conversationStore,
+    InMemoryChatHistoryProvider chatHistoryProvider,
+    [FromKeyedServices("RAG")] AIAgent agent,
+    [FromQuery] string? sessionId) =>
+{
+    var session = await conversationStore.GetOrCreateSessionAsync(sessionId, async () => await agent.CreateSessionAsync());
+    var history = chatHistoryProvider.GetMessages(session)
+        .Select(message => new RagHistoryMessage(
+            message.Role.ToString(),
+            string.IsNullOrWhiteSpace(message.Text) ? null : message.Text,
+            message.AuthorName));
+
+    return Results.Ok(new
+    {
+        sessionId = string.IsNullOrWhiteSpace(sessionId) ? RagConversationStore.DefaultSessionId : sessionId.Trim(),
+        messages = history
+    });
+}).AllowAnonymous();
+
+app.MapGet("/text-workflow", async ([FromKeyedServices("UppercaseTextExecutor")] Workflow workflow) =>
 {
     await using var run = await InProcessExecution.RunAsync(workflow, "Hello, World!");
 

@@ -73,7 +73,7 @@ builder.Host.UseWolverine(options =>
     options.PersistMessagesWithPostgresql(dbConnectionString!);
 
     options.Durability.EnableInboxPartitioning = true;
-    
+
     // Adding EF Core transactional middleware, saga support,
     // and EF Core support for Wolverine storage operations
     options.UseEntityFrameworkCoreTransactions();
@@ -84,7 +84,7 @@ builder.Host.UseWolverine(options =>
     options.Policies.UseDurableOutboxOnAllSendingEndpoints();
     options.Policies.UseDurableInboxOnAllListeners();
 
-    if(builder.Environment.IsDevelopment())
+    if (builder.Environment.IsDevelopment())
     {
         options.Durability.Mode = DurabilityMode.Solo;
     }
@@ -159,7 +159,7 @@ app.MapPost("users/welcome-email", async (Guid code, IMessageBus bus) =>
 
 app.MapPost("outbox-example", async (ApplicationDbContext dbContext, IDbContextOutbox outbox) =>
 {
-    outbox.Enroll(dbContext); 
+    outbox.Enroll(dbContext);
 
     await outbox.PublishAsync(new UserRegistered
     {
