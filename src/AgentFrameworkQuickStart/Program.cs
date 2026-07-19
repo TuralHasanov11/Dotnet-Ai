@@ -86,7 +86,7 @@ var ragChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHis
 
 builder.Services.AddSingleton(ragChatHistoryProvider);
 builder.Services.AddSingleton<SimpleServiceMemoryProvider>();
-builder.Services.AddSingleton<RagConversationStore>();
+builder.Services.AddSingleton<ConversationStore>();
 
 builder.Services.AddKeyedSingleton("chat-model-1", (_, _) =>
 {
@@ -236,14 +236,27 @@ app.MapGet("/pirate", async ([FromKeyedServices("Pirate")] AIAgent agent) =>
     return Results.Ok(await agent.RunAsync("Ahoy there! How are you doing?"));
 }).AllowAnonymous();
 
-app.MapGet("/weather", async ([FromKeyedServices("WeatherAgent")] AIAgent agent) =>
+app.MapGet("/weather", async (
+    [FromKeyedServices("WeatherAgent")] AIAgent agent,
+    ConversationStore conversationStore,
+    [FromQuery] string? sessionId,
+    [FromQuery] string? message) =>
 {
-    Microsoft.Extensions.AI.ChatMessage message = new(ChatRole.User, [
-        new TextContent("What is the weather like in Hannover?")
+    var session = await conversationStore.GetOrCreateSessionAsync(sessionId, async () => await agent.CreateSessionAsync());
+    var userMessageText = string.IsNullOrWhiteSpace(message)
+        ? "What is the weather like in Hannover?"
+        : message.Trim();
+
+    Microsoft.Extensions.AI.ChatMessage userMessage = new(ChatRole.User, [
+        new TextContent(userMessageText)
     ]);
 
-    var response = await agent.RunAsync(message);
-    return Results.Ok(response.Text);
+    var response = await agent.RunAsync(userMessage, session);
+    return Results.Ok(new
+    {
+        sessionId = ConversationStore.NormalizeSessionId(sessionId),
+        response.Text
+    });
 }).AllowAnonymous();
 
 app.MapGet("/person", async ([FromKeyedServices("Person")] AIAgent agent) =>
@@ -265,7 +278,7 @@ app.MapGet("/person", async ([FromKeyedServices("Person")] AIAgent agent) =>
 
 app.MapGet("/rag", async (
     [FromKeyedServices("RAG")] AIAgent agent,
-    RagConversationStore conversationStore,
+    ConversationStore conversationStore,
     [FromQuery] string? sessionId,
     [FromQuery] string? message) =>
 {
@@ -281,13 +294,13 @@ app.MapGet("/rag", async (
     var response = await agent.RunAsync(userMessage, session);
     return Results.Ok(new
     {
-        sessionId = string.IsNullOrWhiteSpace(sessionId) ? RagConversationStore.DefaultSessionId : sessionId.Trim(),
+        sessionId = ConversationStore.NormalizeSessionId(sessionId),
         response.Text
     });
 }).AllowAnonymous();
 
 app.MapGet("/rag/history", async (
-    RagConversationStore conversationStore,
+    ConversationStore conversationStore,
     InMemoryChatHistoryProvider chatHistoryProvider,
     [FromKeyedServices("RAG")] AIAgent agent,
     [FromQuery] string? sessionId) =>
@@ -301,7 +314,7 @@ app.MapGet("/rag/history", async (
 
     return Results.Ok(new
     {
-        sessionId = string.IsNullOrWhiteSpace(sessionId) ? RagConversationStore.DefaultSessionId : sessionId.Trim(),
+        sessionId = ConversationStore.NormalizeSessionId(sessionId),
         messages = history
     });
 }).AllowAnonymous();
@@ -322,5 +335,37 @@ app.MapPost("/unit-converter", async ([FromKeyedServices("UnitConverterAgent")] 
     var response = await agent.RunAsync(message);
     return Results.Ok(response.Text);
 }).AllowAnonymous();
+
+app.MapPost("/spam-workflow", async ([FromKeyedServices("SpamDetectionExecutor")] Workflow workflow) => {
+    const string emailContent = "Congratulations! You've won $1,000,000! Click here to claim your prize now!";
+    StreamingRun run = await InProcessExecution.RunStreamingAsync(workflow, new Microsoft.Extensions.AI.ChatMessage(ChatRole.User, emailContent));
+
+    await run.TrySendMessageAsync(new TurnToken(emitEvents: true));
+
+    await foreach (var evt in run.WatchStreamAsync().ConfigureAwait(false))
+    {
+        if (evt is WorkflowOutputEvent outputEvent)
+        {
+            Console.WriteLine($"{outputEvent}");
+        }
+
+        if (evt is ExecutorCompletedEvent executorComplete)
+        {
+            Console.WriteLine($"{executorComplete.ExecutorId}: {executorComplete.Data}");
+        }
+
+        if (evt is SuperStepCompletedEvent superStepCompletedEvt)
+        {
+            // Access the checkpoint
+            CheckpointInfo? checkpoint = superStepCompletedEvt.CompletionInfo?.Checkpoint;
+            Console.WriteLine($"Checkpoint: {checkpoint?.CheckpointId}");
+        }
+    }
+
+    var checkpoints = run.Checkpoints;
+    Console.WriteLine($"Checkpoints: {checkpoints.Count}");
+
+    return Results.Ok();
+});
 
 await app.RunAsync();
