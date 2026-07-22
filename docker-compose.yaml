@@ -17,111 +17,111 @@ services:
       - ASPNETCORE_HTTPS_PORTS=5003
       - ASPNETCORE_URLS=http://+:5002
   
-  # web-api-1:
-  #   image: dotnet-ai/web-api-1
-  #   build:
-  #     context: .
-  #     dockerfile: src/WebApi1/Dockerfile
-  #   container_name: web-api-1
-  #   ports:
-  #   - "5006:5006"
-  #   - "5007:5007"
-  #   networks:
-  #   - dotnet-ai-network
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - ASPNETCORE_HTTP_PORTS=5006
-  #     - ASPNETCORE_HTTPS_PORTS=5007
-  #     - ASPNETCORE_URLS=http://+:5006
-  #     - ConnectionStrings__Database=Host=web-api-1-database;Port=5432;Database=webapi1db;Username=postgres;Password=password
-  #   depends_on:
-  #     web-api-1-database:
-  #       condition: service_healthy
-  #   restart: unless-stopped
+  web-api-1:
+    image: dotnet-ai/web-api-1
+    build:
+      context: .
+      dockerfile: src/WebApi1/Dockerfile
+    container_name: web-api-1
+    ports:
+    - "5006:5006"
+    - "5007:5007"
+    networks:
+    - dotnet-ai-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5006
+      - ASPNETCORE_HTTPS_PORTS=5007
+      - ASPNETCORE_URLS=http://+:5006
+      - ConnectionStrings__Database=Host=web-api-1-database;Port=5432;Database=webapi1db;Username=postgres;Password=password
+    depends_on:
+      web-api-1-database:
+        condition: service_healthy
+    restart: unless-stopped
   
-  # web-api-1-database:
-  #   image: postgres:18-alpine
-  #   container_name: web-api-1-database
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: webapi1db
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - ./containers/web-api-1-database-data:/var/lib/postgresql/data
-  #   networks:
-  #     - dotnet-ai-network
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres -d webapi1db"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
+  web-api-1-database:
+    image: postgres:18-alpine
+    container_name: web-api-1-database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: webapi1db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./containers/web-api-1-database-data:/var/lib/postgresql/data
+    networks:
+      - dotnet-ai-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d webapi1db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
       
-  # mcp-server-quick-start:
-  #   image: dotnet-ai/mcp-server-quick-start
-  #   build:
-  #     context: .
-  #     dockerfile: src/McpServerQuickStart/Dockerfile
-  #   container_name: mcp-server-quick-start
-  #   ports:
-  #   - "5004:5004"
-  #   - "5005:5005"
-  #   networks:
-  #   - dotnet-ai-network
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - ASPNETCORE_HTTP_PORTS=5004
-  #     - ASPNETCORE_HTTPS_PORTS=5005
-  #     - ASPNETCORE_URLS=http://+:5004
+  mcp-server-quick-start:
+    image: dotnet-ai/mcp-server-quick-start
+    build:
+      context: .
+      dockerfile: src/McpServerQuickStart/Dockerfile
+    container_name: mcp-server-quick-start
+    ports:
+    - "5004:5004"
+    - "5005:5005"
+    networks:
+    - dotnet-ai-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5004
+      - ASPNETCORE_HTTPS_PORTS=5005
+      - ASPNETCORE_URLS=http://+:5004
 
-  # web-app-1:
-  #   image: dotnet-ai/webapp1
-  #   build:
-  #     context: .
-  #     dockerfile: src/WebApp1/Dockerfile
-  #   container_name: webapp1
-  #   ports:
-  #   - "5000:5000"
-  #   - "5001:5001"
-  #   networks:
-  #   - dotnet-ai-network
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - ASPNETCORE_HTTP_PORTS=5000
-  #     - ASPNETCORE_HTTPS_PORTS=5001
-  #     - ASPNETCORE_URLS=http://+:5000
-  #     - AgentFrameworkQuickStart__BaseUrl=http://agent-framework-quick-start:5002
+  web-app-1:
+    image: dotnet-ai/webapp1
+    build:
+      context: .
+      dockerfile: src/WebApp1/Dockerfile
+    container_name: webapp1
+    ports:
+    - "5000:5000"
+    - "5001:5001"
+    networks:
+    - dotnet-ai-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5000
+      - ASPNETCORE_HTTPS_PORTS=5001
+      - ASPNETCORE_URLS=http://+:5000
+      - AgentFrameworkQuickStart__BaseUrl=http://agent-framework-quick-start:5002
 
-  # keycloak:
-  #   image: quay.io/keycloak/keycloak:26.6.1
-  #   container_name: keycloak
-  #   command: start-dev
-  #   ports:
-  #     - "127.0.0.1:8080:8080"
-  #   environment:
-  #     - KC_BOOTSTRAP_ADMIN_USERNAME=admin
-  #     - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-  #   volumes:
-  #     - ./containers/keycloak_data:/opt/keycloak/data
-  #   networks:
-  #     - dotnet-ai-network
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6.1
+    container_name: keycloak
+    command: start-dev
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+    volumes:
+      - ./containers/keycloak_data:/opt/keycloak/data
+    networks:
+      - dotnet-ai-network
 
-  # web-app-2:
-  #   image: dotnet-ai/webapp2
-  #   container_name: webapp2
-  #   build:
-  #     context: ./src/web-app-2
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - HOST=0.0.0.0
-  #     - PORT=3000
-  #   depends_on:
-  #     - keycloak
-  #   networks:
-  #     - dotnet-ai-network
+  web-app-2:
+    image: dotnet-ai/webapp2
+    container_name: webapp2
+    build:
+      context: ./src/web-app-2
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+    depends_on:
+      - keycloak
+    networks:
+      - dotnet-ai-network
 
 networks:
   dotnet-ai-network:

@@ -119,6 +119,23 @@
         "problemMatcher": []
     },
     {
+        "label": "compose: up with apps - AgentFrameworkQuickStart",
+        "type": "process",
+        "command": "docker",
+        "args": [
+            "compose",
+            "-f",
+            "docker-compose.yaml",
+            "-f",
+            "docker-compose.override.yaml",
+            "agent-framework-quick-start",
+            "up",
+            "-d",
+            "--build"
+        ],
+        "problemMatcher": []
+    },
+    {
         "label": "k8s: deploy",
         "type": "process",
         "command": "pwsh",
@@ -254,9 +271,9 @@
     },
     {
         "type": "docker-build",
-        "label": "docker-build: debug",
+        "label": "docker-build: debug WebApi1",
         "dependsOn": [
-            "build"
+            "build: WebApi1"
         ],
         "dockerBuild": {
             "tag": "dotnetai:dev",
@@ -271,9 +288,9 @@
     },
     {
         "type": "docker-build",
-        "label": "docker-build: release",
+        "label": "docker-build: release WebApi1",
         "dependsOn": [
-            "build"
+            "build: WebApi1"
         ],
         "dockerBuild": {
             "tag": "dotnetai:latest",
@@ -291,9 +308,9 @@
     },
     {
         "type": "docker-run",
-        "label": "docker-run: debug",
+        "label": "docker-run: debug WebApi1",
         "dependsOn": [
-            "docker-build: debug"
+            "docker-build: debug WebApi1"
         ],
         "dockerRun": {},
         "netCore": {
@@ -303,9 +320,9 @@
     },
     {
         "type": "docker-run",
-        "label": "docker-run: release",
+        "label": "docker-run: release WebApi1",
         "dependsOn": [
-            "docker-build: release"
+            "docker-build: release WebApi1"
         ],
         "dockerRun": {},
         "netCore": {

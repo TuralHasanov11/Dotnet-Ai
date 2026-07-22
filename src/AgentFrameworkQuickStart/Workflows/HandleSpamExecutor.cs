@@ -22,4 +22,4 @@ internal sealed partial class HandleSpamExecutor : Executor<SpamDetectionResult>
             throw new ArgumentException("This executor should only handle spam messages.");
         }
     }
-}  
+}

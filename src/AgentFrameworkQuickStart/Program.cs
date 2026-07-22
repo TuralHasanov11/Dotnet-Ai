@@ -23,6 +23,9 @@ using AgentFrameworkQuickStart.ContextProviders;
 using AgentFrameworkQuickStart.Services;
 using Microsoft.AspNetCore.Mvc;
 using AgentFrameworkQuickStart.Middleware;
+using A2A.AspNetCore;
+using A2A;
+using AgentFrameworkQuickStart.Features.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
 const string KeycloakSecurityScheme = "Keycloak";
@@ -79,12 +82,16 @@ builder.Services.AddHealthChecks();
 // ### AI Clients
 
 var SourceName = Assembly.GetExecutingAssembly().GetName().Name;
-var ragChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
-{
-    StorageInputRequestMessageFilter = messages => messages.Where(m => m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.AIContextProvider && m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.ChatHistory)
-});
 
-builder.Services.AddSingleton(ragChatHistoryProvider);
+builder.Services.AddSingleton(
+    new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
+    {
+        StorageInputRequestMessageFilter = messages =>
+            messages.Where(m =>
+                m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.AIContextProvider &&
+                m.GetAgentRequestMessageSourceType() != AgentRequestMessageSourceType.ChatHistory)
+    }));
+
 builder.Services.AddSingleton<SimpleServiceMemoryProvider>();
 builder.Services.AddSingleton<ConversationStore>();
 
@@ -100,85 +107,15 @@ builder.Services.AddKeyedSingleton("chat-model-1", (_, _) =>
     return responsesClient;
 });
 
+
 // ### Agents
-builder.AddAIAgent("WeatherAgent", (sp, _) =>
-{
-    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
-        .AsAIAgent(
-            name: "WeatherAgent",
-            instructions: "You are a helpful weather assistant that provides weather information.",
-            tools: [AIFunctionFactory.Create(WeatherTool.GetWeather, name: "get_weather")])
-        .AsBuilder()
-        .Use(
-            runFunc: MessageCounterAgentRunMiddleware.Handle,
-            runStreamingFunc: MessageCounterAgentRunMiddleware.HandleStreaming)
-        .Use(
-            runFunc: ExceptionHandlingMiddleware.Handle,
-            runStreamingFunc: null
-        )
-        .Build();
-}).WithInMemorySessionStore();
+builder.AddAgents();
 
-
-builder.AddAIAgent("Person", (sp, _) =>
-{
-    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
-        .AsAIAgent(
-            name: "Person",
-            instructions: "You are a helpful assistant that provides information about people.",
-            tools: [AIFunctionFactory.Create(PersonTool.GetPersonInfo)]);
-});
-
-builder.AddAIAgent(
-    "Pirate",
-    instructions: "You are a pirate. Speak like a pirate",
-    description: "An agent that speaks like a pirate",
-    chatClientServiceKey: "chat-model-2");
-
-builder.AddAIAgent("agent-1", instructions: "you are agent 1!");
-builder.AddAIAgent("agent-2", instructions: "you are agent 2!");
-
-builder.AddAIAgent("RAG", (sp, _) =>
-{
-    var simpleServiceMemory = sp.GetRequiredService<SimpleServiceMemoryProvider>();
-    var chatHistoryProvider = sp.GetRequiredService<InMemoryChatHistoryProvider>();
-
-    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
-        .AsAIAgent(new ChatClientAgentOptions
-        {
-            Name = "RAG",
-            ChatOptions = new() { Instructions = "You are a helpful support specialist. Answer questions using the provided context and cite the source document when available." },
-            AIContextProviders = [
-                simpleServiceMemory,
-                new TextSearchProvider(SearchAdapter.Adapter, new TextSearchProviderOptions()
-                {
-                    SearchTime = TextSearchProviderOptions.TextSearchBehavior.BeforeAIInvoke,
-                })],
-            ChatHistoryProvider = chatHistoryProvider
-        });
-});
 
 // ### Workflows
 builder.AddWorkflows();
 
-// ### Agent Skills
-var unitConverterSkill = new UnitConverterSkill();
-#pragma warning disable MAAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-var skillsProvider = new AgentSkillsProviderBuilder()
-    .UseSkill(unitConverterSkill)                                  // AgentClassSkill
-    .Build();
-#pragma warning restore MAAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-builder.AddAIAgent("UnitConverterAgent", (sp, _) =>
-{
-    return sp.GetRequiredKeyedService<IChatClient>("chat-model-1")
-        .AsAIAgent(new ChatClientAgentOptions
-        {
-            Name = "UnitConverterAgent",
-            ChatOptions = new() { Instructions = "You are a helpful assistant that converts between common units using a multiplication factor. Use when asked to convert miles, kilometers, pounds, or kilograms." },
-            AIContextProviders = [skillsProvider],
-        });
-});
 
 var app = builder.Build();
 
@@ -231,33 +168,47 @@ app.MapGet("/", () => Assembly.GetExecutingAssembly().GetName().Name)
     .AllowAnonymous()
     .ExcludeFromDescription();
 
-app.MapGet("/pirate", async ([FromKeyedServices("Pirate")] AIAgent agent) =>
-{
-    return Results.Ok(await agent.RunAsync("Ahoy there! How are you doing?"));
-}).AllowAnonymous();
 
-app.MapGet("/weather", async (
-    [FromKeyedServices("WeatherAgent")] AIAgent agent,
-    ConversationStore conversationStore,
-    [FromQuery] string? sessionId,
-    [FromQuery] string? message) =>
-{
-    var session = await conversationStore.GetOrCreateSessionAsync(sessionId, async () => await agent.CreateSessionAsync());
-    var userMessageText = string.IsNullOrWhiteSpace(message)
-        ? "What is the weather like in Hannover?"
-        : message.Trim();
-
-    Microsoft.Extensions.AI.ChatMessage userMessage = new(ChatRole.User, [
-        new TextContent(userMessageText)
-    ]);
-
-    var response = await agent.RunAsync(userMessage, session);
-    return Results.Ok(new
+app.MapGet("/weather-agent", async (
+        [FromKeyedServices("WeatherAgent")] AIAgent agent,
+        ConversationStore conversationStore,
+        [FromQuery] string? sessionId,
+        [FromQuery] string? message) =>
     {
-        sessionId = ConversationStore.NormalizeSessionId(sessionId),
-        response.Text
-    });
-}).AllowAnonymous();
+        var session = await conversationStore.GetOrCreateSessionAsync(sessionId, async () => await agent.CreateSessionAsync());
+        var userMessageText = string.IsNullOrWhiteSpace(message)
+            ? "What is the weather like in Hannover?"
+            : message.Trim();
+
+        Microsoft.Extensions.AI.ChatMessage userMessage = new(ChatRole.User, [
+            new TextContent(userMessageText)
+        ]);
+
+        var response = await agent.RunAsync(userMessage, session);
+
+        return Results.Ok(new WeatherResponse(ConversationStore.NormalizeSessionId(sessionId), response.Text));
+    }).AllowAnonymous();
+
+// Map the A2A endpoint for the WeatherAgent
+app.MapA2AHttpJson("WeatherAgent", "/a2a/weather-agent")
+    .AllowAnonymous();
+
+// Serve a minimal agent card for the "weather" agent discovery.
+app.MapWellKnownAgentCard(new AgentCard
+{
+    Name = "WeatherAgent",
+    Description = "A helpful weather assistant.",
+    DefaultInputModes = ["text"],
+    SupportedInterfaces =
+    [
+        new AgentInterface
+        {
+            Url = "http://localhost:5002/a2a/weather-agent",
+            ProtocolBinding = ProtocolBindingNames.HttpJson,
+            ProtocolVersion = "1.0",
+        }
+    ],
+});
 
 app.MapGet("/person", async ([FromKeyedServices("Person")] AIAgent agent) =>
 {
@@ -323,7 +274,7 @@ app.MapGet("/text-workflow", async ([FromKeyedServices("UppercaseTextExecutor")]
 {
     await using var run = await InProcessExecution.RunAsync(workflow, "Hello, World!");
 
-    return Results.Ok(run.NewEvents.Where(e => e is ExecutorCompletedEvent).Select(e => ((ExecutorCompletedEvent)e).Data));
+    return Results.Ok(run.NewEvents.Where(e => e is WorkflowOutputEvent).Select(e => ((WorkflowOutputEvent)e).Data));
 }).AllowAnonymous();
 
 app.MapPost("/unit-converter", async ([FromKeyedServices("UnitConverterAgent")] AIAgent agent, [FromQuery] double value, [FromQuery] string fromUnit, [FromQuery] string toUnit) =>
@@ -336,7 +287,8 @@ app.MapPost("/unit-converter", async ([FromKeyedServices("UnitConverterAgent")] 
     return Results.Ok(response.Text);
 }).AllowAnonymous();
 
-app.MapPost("/spam-workflow", async ([FromKeyedServices("SpamDetectionExecutor")] Workflow workflow) => {
+app.MapPost("/spam-workflow", async ([FromKeyedServices("SpamDetectionExecutor")] Workflow workflow) =>
+{
     const string emailContent = "Congratulations! You've won $1,000,000! Click here to claim your prize now!";
     StreamingRun run = await InProcessExecution.RunStreamingAsync(workflow, new Microsoft.Extensions.AI.ChatMessage(ChatRole.User, emailContent));
 
@@ -366,6 +318,11 @@ app.MapPost("/spam-workflow", async ([FromKeyedServices("SpamDetectionExecutor")
     Console.WriteLine($"Checkpoints: {checkpoints.Count}");
 
     return Results.Ok();
+});
+
+app.MapPost("/spam-workflow/display", async ([FromKeyedServices("SpamDetectionExecutor")] Workflow workflow) =>
+{
+    return Results.Ok(workflow.ToMermaidString());
 });
 
 await app.RunAsync();

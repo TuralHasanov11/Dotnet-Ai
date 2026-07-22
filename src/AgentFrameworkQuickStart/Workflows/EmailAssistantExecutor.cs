@@ -18,8 +18,8 @@ namespace AgentFrameworkQuickStart.Workflows
 
         [MessageHandler]
         public override async ValueTask<EmailResponse> HandleAsync(
-            SpamDetectionResult message, 
-            IWorkflowContext context, 
+            SpamDetectionResult message,
+            IWorkflowContext context,
             CancellationToken cancellationToken = default)
         {
             if (message.IsSpam)

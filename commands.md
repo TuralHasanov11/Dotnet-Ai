@@ -7,6 +7,8 @@ specify init --here
 
 ```sh
 docker compose -f docker-compose.yaml -f docker-compose.override.yaml up -d --build
+docker compose -f docker-compose.yaml -f docker-compose.override.yaml up -d --build agent-framework-quick-start 
+
 ```
 
 ### Export dev certificate for HTTPS (Windows PowerShell)
