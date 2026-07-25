@@ -318,11 +318,11 @@ app.MapPost("/spam-workflow", async ([FromKeyedServices("SpamDetectionExecutor")
     Console.WriteLine($"Checkpoints: {checkpoints.Count}");
 
     return Results.Ok();
-});
+}).AllowAnonymous();
 
 app.MapPost("/spam-workflow/display", async ([FromKeyedServices("SpamDetectionExecutor")] Workflow workflow) =>
 {
     return Results.Ok(workflow.ToMermaidString());
-});
+}).AllowAnonymous();
 
 await app.RunAsync();
